@@ -78,7 +78,7 @@ module TrevolGenerado
         :'object' => :'String',
         :'id' => :'String',
         :'nit' => :'String',
-        :'check_digit' => :'String',
+        :'check_digit' => :'Integer',
         :'name' => :'String',
         :'trade_name' => :'String',
         :'status' => :'String',
