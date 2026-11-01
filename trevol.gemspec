@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
   s.metadata = {
     'homepage_uri' => 'https://platform.trevol.si/docs',
-    'source_code_uri' => 'https://github.com/trevol/trevol-ruby',
-    'changelog_uri' => 'https://github.com/trevol/trevol-ruby/blob/main/CHANGELOG.md',
+    'source_code_uri' => 'https://github.com/trevol-si/trevol-ruby',
+    'changelog_uri' => 'https://github.com/trevol-si/trevol-ruby/blob/main/CHANGELOG.md',
     'rubygems_mfa_required' => 'true'
   }
   s.required_ruby_version = '>= 3.2'
