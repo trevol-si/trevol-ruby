@@ -1,0 +1,26 @@
+# Publicación del SDK de Ruby (docs/api/43 §2.13 y §2.14). Escrita, NO activa. Un tag `v*` la dispara; el environment `publicacion` exige la
+# aprobación del dueño. Publica en RubyGems con *trusted publishing* (OIDC): sin API keys guardadas (configurar antes el publicador de confianza
+# de la gema `trevol` en rubygems.org con este repo y este flujo).
+name: Publicar
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  rubygems:
+    runs-on: ubuntu-latest
+    environment: publicacion
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+      - run: bundle exec rake test
+      - name: El tag coincide con la versión de la gema
+        run: test "v$(ruby -Ilib -e 'require "trevol"; print Trevol::VERSION')" = "${GITHUB_REF_NAME}"
+      - uses: rubygems/release-gem@v1

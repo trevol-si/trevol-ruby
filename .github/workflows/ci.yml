@@ -1,0 +1,34 @@
+# CI del SDK de Ruby (docs/api/43 §2.13). Escrita, NO activa: se activa sola cuando este directorio sea su propio repo (trevol-ruby).
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ['3.2', '3.3', '3.4']
+    env:
+      TREVOL_API_KEY: tvl_test_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Sintaxis y advertencias de lo propio
+        run: for f in lib/trevol.rb lib/trevol/*.rb; do ruby -wc "$f"; done
+      - run: bundle exec rake test
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Contra Prism (servidor simulado desde la especificación pública) y los fragmentos de la documentación
+        run: |
+          npx --yes @stoplight/prism-cli@5.16.0 mock pruebas/datos/openapi.json -p 4010 -h 127.0.0.1 > /tmp/prism.log 2>&1 &
+          for i in $(seq 1 60); do curl -s -o /dev/null http://127.0.0.1:4010/health && break; sleep 1; done
+          TREVOL_PRISM_URL=http://127.0.0.1:4010 bundle exec rake prism

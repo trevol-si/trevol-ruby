@@ -1,0 +1,16 @@
+# Configuración de OpenAPI Generator para el SDK de Ruby (docs/api/43-sdks-y-documentacion.md §2.5).
+# La corre sdks/generar.sh sobre sdks/especificacion/openapi.sdk.enums-abiertos.json (piloto: sin enum en lo que la API devuelve, un valor
+# nuevo no se vuelve «unknown_default_open_api»). Lo generado va a lib/trevol_generado/ y lib/trevol_generado.rb (módulo TrevolGenerado,
+# dentro de la misma gema `trevol`); la capa propia (módulo Trevol, en lib/trevol/) lo usa. Del generador solo se conserva eso: generar.sh
+# descarta el gemspec, Gemfile, README, docs/, spec/, .rubocop.yml, .travis.yml, .gitlab-ci.yml y git_push.sh.
+generatorName: ruby
+inputSpec: especificacion/openapi.sdk.enums-abiertos.json
+additionalProperties:
+  gemName: trevol_generado
+  moduleName: TrevolGenerado
+  gemVersion: 0.1.0
+  library: faraday
+  hideGenerationTimestamp: true
+  sortParamsByRequiredFlag: true
+  disallowAdditionalPropertiesIfNotPresent: false
+  enumUnknownDefaultCase: true
