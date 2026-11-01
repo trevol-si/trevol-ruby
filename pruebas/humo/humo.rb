@@ -4,7 +4,8 @@
 #
 #   TREVOL_API_KEY=tvl_test_… bundle exec ruby pruebas/humo/humo.rb
 #
-# Solo lecturas y un preview (el SDK de Ruby NO emite). Se NIEGA a correr si la llave no es tvl_test_. TREVOL_BASE_URL (opcional) apunta a
+# Lecturas, un preview y un error tipado (validation_error); con TREVOL_HUMO_EMITIR=1 además EMITE una factura en habilitación, espera a que
+# quede final y descarga el PDF. Se NIEGA a correr si la llave no es tvl_test_. TREVOL_BASE_URL (opcional) apunta a
 # otro servidor, p. ej. un Prism local.
 require 'base64'
 require 'json'
@@ -39,13 +40,24 @@ paso.call('retrieve_company') do
 
   "#{c.name} (#{c.nit})"
 end
-paso.call('preview_invoice') do
-  p = trevol.invoices.preview_invoice(
-    external_id: 'HUMO-PREVIEW', customer: { final_consumer: true },
-    items: [{ description: 'Prueba de humo del SDK de Trevol', quantity: '1', unit_price: '1000', taxes: [{ code: '01', rate: '19' }] }],
+factura = lambda do |externo, items = nil|
+  {
+    external_id: externo, customer: { final_consumer: true },
+    items: items || [{ description: 'Prueba de humo del SDK de Trevol', quantity: '1', unit_price: '1000', taxes: [{ code: '01', rate: '19' }] }],
     payment: { form: 'cash', methods: [{ code: '10' }] }
-  )
-  "total #{p.totals && p.totals[:total]}"
+  }
+end
+paso.call('preview_invoice') do
+  p = trevol.invoices.preview_invoice(factura.call('HUMO-PREVIEW'))
+  "total #{p.totals && (p.totals['total'] || p.totals[:total])}" # (los Hash<String, Object> del generado tienen claves de texto)
+end
+paso.call('preview_invoice sin líneas → ValidationError (code validation_error)') do
+  trevol.invoices.preview_invoice(factura.call('HUMO-INVALIDA', []))
+  raise 'no lanzó ValidationError'
+rescue Trevol::ValidationError => e
+  raise "code = #{e.code}" unless e.code == 'validation_error'
+
+  "#{e.status} #{e.code} #{e.errors.first && (e.errors.first[:pointer] || e.errors.first['pointer'])}"
 end
 paso.call('list_invoices + paginate (3)') do
   trevol.invoices.list_invoices(limit: 3)
@@ -67,6 +79,40 @@ paso.call('Webhook#verify (firmado ahora, con un secreto local)') do
   ts = Time.now.to_i
   firma = "v1,#{Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', clave, "#{id}.#{ts}.#{cuerpo}"))}"
   Trevol::Webhook.new("whsec_#{Base64.strict_encode64(clave)}").verify(cuerpo, { 'webhook-id' => id, 'webhook-timestamp' => ts.to_s, 'webhook-signature' => firma }).type
+end
+
+if ENV['TREVOL_HUMO_EMITIR'] == '1'
+  id = nil
+  paso.call('create_invoice (EMITE en habilitación)') do
+    d = trevol.invoices.create_invoice(factura.call("HUMO-RB-#{Time.now.to_i}"))
+    id = d.id
+    "#{d.id} #{d.status}"
+  end
+  if id
+    paso.call('espera un estado final (hasta 90 s)') do
+      limite = Time.now + 90
+      loop do
+        estado = trevol.invoices.retrieve_invoice(id).status.to_s
+        unless %w[pending sending processing].include?(estado)
+          raise "status = #{estado}" unless estado == 'accepted'
+
+          break estado
+        end
+        raise "status = #{estado}" if Time.now > limite
+
+        sleep 3
+      end
+    end
+    paso.call('download_invoice_pdf') do
+      archivo = trevol.invoices.download_invoice_pdf(id)
+      bytes = File.binread(archivo.path)
+      raise 'no es un PDF' unless bytes.start_with?('%PDF')
+
+      "PDF #{bytes.bytesize} bytes"
+    end
+  end
+else
+  puts '(no se emite nada: define TREVOL_HUMO_EMITIR=1 para emitir una factura en habilitación)'
 end
 
 puts "\n#{total - fallas}/#{total} pasos bien"
