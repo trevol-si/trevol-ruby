@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
     'changelog_uri' => 'https://github.com/trevol-si/trevol-ruby/blob/main/CHANGELOG.md',
     'rubygems_mfa_required' => 'true'
   }
-  s.required_ruby_version = '>= 3.2'
+  s.required_ruby_version = '>= 3.3' # standardwebhooks 1.1 exige 3.3; Ruby 3.2 salió de soporte en marzo de 2026
 
   s.add_runtime_dependency 'base64' # standardwebhooks 1.1.0 lo usa sin declararlo y desde Ruby 3.4 ya no es parte de la biblioteca estándar
   s.add_runtime_dependency 'cgi' # el código generado hace require 'cgi'; en Ruby 4.0 ya no viene en la biblioteca estándar

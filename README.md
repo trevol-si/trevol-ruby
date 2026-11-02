@@ -3,7 +3,7 @@
 SDK de Ruby para la **API de Trevol**: facturación electrónica, documento soporte, documento equivalente, nómina electrónica y eventos
 RADIAN ante la DIAN (Colombia). Documentación: <https://platform.trevol.si/docs>.
 
-> **In English.** Ruby SDK for the Trevol API (Colombian e-invoicing, DIAN). Ruby ≥ 3.2, Faraday 2. Typed models and API clients generated from
+> **In English.** Ruby SDK for the Trevol API (Colombian e-invoicing, DIAN). Ruby ≥ 3.3, Faraday 2. Typed models and API clients generated from
 > the OpenAPI spec (OpenAPI Generator, module `TrevolGenerado`), plus a thin hand-written layer (module `Trevol`): automatic `Idempotency-Key`
 > (the same one on retries), retries with exponential backoff honouring `Retry-After`, typed errors by problem+json `code`, environment inferred
 > from the key prefix (`tvl_test_` = DIAN test environment, `tvl_live_` = production), pinned `Trevol-Version`, Standard Webhooks signature
@@ -17,7 +17,7 @@ RADIAN ante la DIAN (Colombia). Documentación: <https://platform.trevol.si/docs
 gem install trevol          # o, en tu Gemfile: gem 'trevol'
 ```
 
-Necesita Ruby 3.2 o más nuevo. Depende de [Faraday](https://lostisland.github.io/faraday/) 2 y de la gema abierta
+Necesita Ruby 3.3 o más nuevo. Depende de [Faraday](https://lostisland.github.io/faraday/) 2 y de la gema abierta
 [`standardwebhooks`](https://rubygems.org/gems/standardwebhooks) (MIT).
 
 ## Uso
