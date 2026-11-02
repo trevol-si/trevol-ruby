@@ -1,6 +1,11 @@
 # Publicación del SDK de Ruby (docs/api/43 §2.13 y §2.14). Escrita, NO activa. Un tag `v*` la dispara; el environment `publicacion` exige la
 # aprobación del dueño. Publica en RubyGems con *trusted publishing* (OIDC): sin API keys guardadas (configurar antes el publicador de confianza
 # de la gema `trevol` en rubygems.org con este repo y este flujo).
+# La primera publicación crea la gema con el publicador PENDIENTE de la cuenta del dueño, y RubyGems exige que el flujo nombre esa cuenta
+# por su ID inmutable (`owner` al cambiar el token OIDC). rubygems/release-gem y configure-rubygems-credentials (v2.1.0) todavía no tienen
+# esa entrada, así que el cambio se hace aquí con curl (API: POST /api/v1/oidc/trusted_publisher/exchange_token {jwt, owner}).
+# RUBYGEMS_DUENO = 255410 es el ID de la cuenta del dueño en rubygems.org (no es un secreto). El publicador pendiente vence en ~12 h:
+# créalo de nuevo justo antes del tag si ya venció.
 name: Publicar
 on:
   push:
@@ -13,7 +18,7 @@ jobs:
     environment: publicacion
     permissions:
       id-token: write
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -23,4 +28,17 @@ jobs:
       - run: bundle exec rake test
       - name: El tag coincide con la versión de la gema
         run: test "v$(ruby -Ilib -e 'require "trevol"; print Trevol::VERSION')" = "${GITHUB_REF_NAME}"
-      - uses: rubygems/release-gem@v1
+      - run: gem build trevol.gemspec
+      - name: Llave temporal de RubyGems (OIDC, con el dueño)
+        env:
+          RUBYGEMS_DUENO: '255410'
+        run: |
+          jwt=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=rubygems.org" | jq -r .value)
+          llave=$(jq -n --arg jwt "$jwt" --arg owner "$RUBYGEMS_DUENO" '{jwt: $jwt, owner: $owner}' \
+            | curl -fsS -X POST -H 'Content-Type: application/json' --data @- \
+              https://rubygems.org/api/v1/oidc/trusted_publisher/exchange_token | jq -r .rubygems_api_key)
+          test -n "$llave" && test "$llave" != null
+          echo "::add-mask::$llave"
+          echo "GEM_HOST_API_KEY=$llave" >> "$GITHUB_ENV"
+      - run: gem push trevol-*.gem
