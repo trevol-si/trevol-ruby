@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.summary = 'SDK de Ruby para la API de Trevol (facturación electrónica y demás documentos ante la DIAN, Colombia)'
   s.description = 'Cliente de la API de Trevol: Idempotency-Key automática, reintentos con espera creciente, errores tipados, ' \
                   'entorno deducido de la llave, paginación con iteradores, descargas de PDF/XML/ZIP y verificación de webhooks (Standard Webhooks).'
-  s.authors = ['Trevol']
+  s.authors = ['Joshua Montclair (Trevol)']
   s.homepage = 'https://platform.trevol.si/docs'
   s.license = 'MIT'
   s.metadata = {
