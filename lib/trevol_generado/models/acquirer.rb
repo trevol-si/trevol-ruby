@@ -27,7 +27,11 @@ module TrevolGenerado
 
     attr_accessor :name
 
+    # Null si la DIAN no lo tiene o si la llave no tiene el permiso `customers:read` (es un dato personal).
     attr_accessor :email
+
+    # Solo si la llave no tiene el permiso `customers:read`: `email` viene en null. Valores conocidos: `redacted`.
+    attr_accessor :personal_data
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
@@ -37,7 +41,8 @@ module TrevolGenerado
         :'document_number' => :'document_number',
         :'found' => :'found',
         :'name' => :'name',
-        :'email' => :'email'
+        :'email' => :'email',
+        :'personal_data' => :'personal_data'
       }
     end
 
@@ -59,7 +64,8 @@ module TrevolGenerado
         :'document_number' => :'String',
         :'found' => :'Boolean',
         :'name' => :'String',
-        :'email' => :'String'
+        :'email' => :'String',
+        :'personal_data' => :'String'
       }
     end
 
@@ -67,7 +73,7 @@ module TrevolGenerado
     def self.openapi_nullable
       Set.new([
         :'name',
-        :'email'
+        :'email',
       ])
     end
 
@@ -120,6 +126,10 @@ module TrevolGenerado
       if attributes.key?(:'email')
         self.email = attributes[:'email']
       end
+
+      if attributes.key?(:'personal_data')
+        self.personal_data = attributes[:'personal_data']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -147,7 +157,8 @@ module TrevolGenerado
           document_number == o.document_number &&
           found == o.found &&
           name == o.name &&
-          email == o.email
+          email == o.email &&
+          personal_data == o.personal_data
     end
 
     # @see the `==` method
@@ -159,7 +170,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [object, document_type, document_number, found, name, email].hash
+      [object, document_type, document_number, found, name, email, personal_data].hash
     end
 
     # Builds the object from hash
