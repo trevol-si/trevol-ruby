@@ -23,7 +23,19 @@ module Trevol
       payroll_adjustments: TrevolGenerado::PayrollAdjustmentsApi, payrolls: TrevolGenerado::PayrollsApi,
       radian_events: TrevolGenerado::RadianEventsApi, requests: TrevolGenerado::RequestsApi,
       support_document_adjustments: TrevolGenerado::SupportDocumentAdjustmentsApi, support_documents: TrevolGenerado::SupportDocumentsApi,
-      webhook_endpoints: TrevolGenerado::WebhookEndpointsApi
+      webhook_endpoints: TrevolGenerado::WebhookEndpointsApi,
+      customers: TrevolGenerado::CustomersApi,
+      dian_documents: TrevolGenerado::DianDocumentsApi,
+      dian_syncs: TrevolGenerado::DianSyncsApi,
+      invoice_batches: TrevolGenerado::InvoiceBatchesApi,
+      numbering_associations: TrevolGenerado::NumberingAssociationsApi,
+      numbering_ranges: TrevolGenerado::NumberingRangesApi,
+      numbering_requests: TrevolGenerado::NumberingRequestsApi,
+      paper_numbering_ranges: TrevolGenerado::PaperNumberingRangesApi,
+      products: TrevolGenerado::ProductsApi,
+      radian_status: TrevolGenerado::RadianStatusApi,
+      report_runs: TrevolGenerado::ReportRunsApi,
+      reports: TrevolGenerado::ReportsApi
     }.freeze
 
     RECURSOS.each_key { |nombre| attr_reader nombre }

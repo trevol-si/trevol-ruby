@@ -15,7 +15,7 @@ class FragmentosTest < Minitest::Test
   RAIZ = File.expand_path('../..', __dir__)
 
   def test_la_estructura
-    assert_equal 109, OPERACIONES.size
+    assert_equal 149, OPERACIONES.size
     assert_equal OPERACIONES, Dir.children(PROGRAMAS).grep(/\.rb\z/).map { |f| File.basename(f, '.rb') }.sort
     OPERACIONES.each do |op|
       assert_includes DATOS['fragmentos'][op]['ruby'], 'Trevol::Client.new'

@@ -11,8 +11,8 @@ class ClienteTest < Minitest::Test
     b.trevol.invoices.retrieve_invoice(ID_DOC)
     c = b.peticiones[0][:cabeceras]
     assert_equal "Bearer #{LLAVE_TEST}", c['authorization']
-    assert_equal '2026-10-22', c['trevol-version']
-    assert_equal '2026-10-22', Trevol::API_VERSION
+    assert_equal '2026-11-18', c['trevol-version']
+    assert_equal '2026-11-18', Trevol::API_VERSION
     assert_match(%r{\Atrevol-ruby/#{Regexp.escape(Trevol::VERSION)} \(ruby \d+\.\d+\.\d+; \+https://platform\.trevol\.si/docs\)\z}, c['user-agent'])
     assert_equal 'application/json, application/problem+json', c['accept']
     assert_empty c.keys.grep(/\Ax-trevol-/)

@@ -12,7 +12,7 @@ class ErroresTest < Minitest::Test
   TODOS = Ayudas.datos('errores.json')['clases'].flat_map { |clase, codes| codes.map { |code| [clase, code] } }
 
   def test_cubre_los_30_code
-    assert_equal 30, TODOS.size
+    assert_equal 40, TODOS.size
   end
 
   TODOS.each do |clase, code|
