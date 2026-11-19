@@ -10,7 +10,7 @@ RADIAN ante la DIAN (Colombia). Documentación: <https://platform.trevol.si/docs
 > verification, cursor pagination with `Enumerator::Lazy` and PDF/XML/ZIP downloads. Account keys (`tva_test_`/`tva_live_`) manage the
 > account through `account` and reach each company with `company:` or `with_company`. Docs are in Spanish like the API.
 
-**Versión 0.3.0** — API `2026-11-18`. Licencia MIT.
+**Versión 0.3.1** — API `2026-11-18`. Licencia MIT.
 
 ## Instalación
 

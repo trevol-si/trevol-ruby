@@ -30,7 +30,7 @@ module TrevolGenerado
     # Valores conocidos: `test`, `live`.
     attr_accessor :environment
 
-    # La versión vigente más nueva de la API; el resumen del documento no cambia con la versión de la llave.
+    # La versión del formato de los eventos (hoy `2026-10-22`), la misma para todas las llaves: el resumen del documento no cambia con la versión de la llave.
     attr_accessor :api_version
 
     # Los datos del evento, según su `type` (ver el esquema de cada tipo).

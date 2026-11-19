@@ -19,7 +19,7 @@ module TrevolGenerado
     # Para reconocerla (el software o el equipo que la usa).
     attr_accessor :name
 
-    # `read`: solo lee; `write`: emite y lee. Una de escritura de producción, por ahora, se crea en la app.
+    # `read`: solo lee; `write`: emite y lee.
     attr_accessor :permissions
 
     # Hasta 10 direcciones IP o redes CIDR desde donde sirve (opcional).
