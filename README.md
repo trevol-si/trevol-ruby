@@ -10,7 +10,7 @@ RADIAN ante la DIAN (Colombia). Documentación: <https://platform.trevol.si/docs
 > verification, cursor pagination with `Enumerator::Lazy` and PDF/XML/ZIP downloads. Account keys (`tva_test_`/`tva_live_`) manage the
 > account through `account` and reach each company with `company:` or `with_company`. Docs are in Spanish like the API.
 
-**Versión 0.3.0** (sin publicar) — API `2026-11-18`. Licencia MIT.
+**Versión 0.3.0** — API `2026-11-18`. Licencia MIT.
 
 ## Instalación
 
@@ -113,7 +113,7 @@ No son errores ni se reintentan: se devuelven como el modelo de la respuesta. **
 Hasta 2 reintentos (3 intentos) con espera creciente (0,5 s, 1 s, 2 s… con tope de 8 s y un poco de azar) ante un error de red, 429, 500,
 502, 503, 504, un 409 `request_in_progress` o `previous_event_pending`, y todo problema que diga `retryable: true` (salvo el 402). Respeta
 `Retry-After`; si pide más de `max_retry_after` (60 s) no espera y lanza el error con `retry_after`. Las operaciones sin `Idempotency-Key`
-(crear un endpoint, `…/send`, `DELETE`) solo se reintentan con 429. Los 202 y los errores finales (400, 401, 402, 403, 404, 422 y los 409
+(crear un endpoint, `…/send`, `DELETE`) solo se reintentan con 429. Crear una llave de empresa con la de administración, igual: un reintento la devolvería sin su token. Los 202 y los errores finales (400, 401, 402, 403, 404, 422 y los 409
 `invalid_state`, `external_id_in_use`, `duplicate_document`) **nunca** se reintentan. El SDK no usa `faraday-retry`: es el único que reintenta.
 
 ### La versión de la API
