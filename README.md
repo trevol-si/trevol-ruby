@@ -7,9 +7,10 @@ RADIAN ante la DIAN (Colombia). Documentación: <https://platform.trevol.si/docs
 > the OpenAPI spec (OpenAPI Generator, module `TrevolGenerado`), plus a thin hand-written layer (module `Trevol`): automatic `Idempotency-Key`
 > (the same one on retries), retries with exponential backoff honouring `Retry-After`, typed errors by problem+json `code`, environment inferred
 > from the key prefix (`tvl_test_` = DIAN test environment, `tvl_live_` = production), pinned `Trevol-Version`, Standard Webhooks signature
-> verification, cursor pagination with `Enumerator::Lazy` and PDF/XML/ZIP downloads. Docs are in Spanish like the API.
+> verification, cursor pagination with `Enumerator::Lazy` and PDF/XML/ZIP downloads. Account keys (`tva_test_`/`tva_live_`) manage the
+> account through `account` and reach each company with `company:` or `with_company`. Docs are in Spanish like the API.
 
-**Versión 0.2.0** — API `2026-11-18`. Licencia MIT.
+**Versión 0.3.0** (sin publicar) — API `2026-11-18`. Licencia MIT.
 
 ## Instalación
 
@@ -24,7 +25,7 @@ Necesita Ruby 3.3 o más nuevo. Depende de [Faraday](https://lostisland.github.i
 
 La llave de la API se crea en la consola de desarrolladores (<https://platform.trevol.si/llaves>) y se guarda en el entorno de tu **servidor**:
 `TREVOL_API_KEY`. Una llave `tvl_test_…` llama a la habilitación de la DIAN; una `tvl_live_…`, a producción. El SDK deduce el entorno del
-prefijo (`trevol.environment`).
+prefijo (`trevol.environment`). Para varias empresas de una cuenta, mira [Llave de administración](#llave-de-administración).
 
 ```ruby
 require 'trevol'
@@ -64,6 +65,29 @@ Los nombres de los métodos son los del `operationId` de la [especificación](ht
 los de consulta obligatorios son posicionales; los opcionales (`limit:`, `starting_after:`, `idempotency_key:`) van con nombre. El cuerpo es un
 `Hash` con las claves **iguales a las de la API** (`external_id`) o el modelo generado (`TrevolGenerado::InvoiceInput.new(...)`); los importes y
 las fechas viajan como texto (`'32000.50'`, `'2026-10-31'`).
+
+## Llave de administración
+
+Si llevas varias empresas en una cuenta, una llave de administración (`tva_test_…` para la habilitación, `tva_live_…` para producción)
+maneja la cuenta en `trevol.account` y sirve también en las rutas de cada empresa. Ahí el SDK manda `Trevol-Company` y `Trevol-Environment`
+(el ambiente sale del prefijo); la empresa la das tú, en el cliente (`company:`) o por llamada (`with_company`, que comparte la conexión).
+
+```ruby
+trevol = Trevol::Client.new(llave_de_administracion) # tva_live_… → trevol.key_type == :account, trevol.environment == :live
+
+nueva = trevol.account.create_account_company({ nit: '900373427', name: 'DISTRIBUIDORA LOS ANDES SAS' }) # 201 en pending
+puts nueva.onboarding_url # la empresa termina la vinculación con la DIAN en la app
+
+trevol.paginate { |cursor| trevol.account.list_account_companies(status: 'enabled', starting_after: cursor) }.each do |empresa|
+  facturas = trevol.with_company(empresa.id).invoices.list_invoices(limit: 10)
+  puts "#{empresa.name}: #{facturas.data.size}"
+end
+```
+
+Con una `tva_…` y sin empresa, una ruta de empresa lanza `ConfigurationError` antes de llamar; las de `trevol.account` no la necesitan.
+Con una `tvl_…` (ya es de una empresa), `company:` y `with_company` son `ConfigurationError`, el SDK nunca manda esas dos cabeceras y
+las operaciones de `trevol.account` lanzan `ConfigurationError` sin llamar: piden una `tva_…`.
+Los permisos, el alcance y los límites de la llave están en la documentación (<https://platform.trevol.si/docs>).
 
 ## Lo que conviene saber
 
@@ -151,6 +175,7 @@ Trevol::Client.new(
   max_retry_after: 60,         # segundos
   base_url: 'https://api.trevol.si/v1',
   environment: :test,          # si la llave no coincide: ConfigurationError antes de llamar
+  company: nil,                # solo con una llave tva_…: la empresa (com_…) de las rutas de una empresa
   proxy: nil                   # p. ej. 'http://proxy.miempresa.co:3128'
 )
 ```

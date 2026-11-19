@@ -3,6 +3,7 @@
 require 'faraday'
 require 'securerandom'
 require_relative 'errors'
+require_relative 'llave'
 
 module Trevol
   # El transporte: lo que hace que las llamadas se comporten igual en los 7 SDK (docs/api/43 §2.6.2 a §2.6.5).
@@ -24,9 +25,21 @@ module Trevol
     Resultado = Struct.new(:tipo, :estado, :code, :retryable, :retry_after, keyword_init: true)
     Decision = Struct.new(:reintentar, :espera, :motivo)
 
-    # Lo que necesita el middleware. La llave nunca sale en un inspect.
-    Opciones = Struct.new(:llave, :api_version, :user_agent, :max_reintentos, :max_retry_after, :ruta_base, :dormir, :azar, :uuid, :ahora, keyword_init: true) do
-      def inspect = "#<Trevol::Transporte::Opciones api_version=#{api_version.inspect} max_reintentos=#{max_reintentos.inspect}>"
+    # Con una llave de administración (tva_…), las rutas de una empresa llevan estas dos cabeceras; con una tvl_ nunca se mandan.
+    COMPANY = 'Trevol-Company'
+    ENVIRONMENT = 'Trevol-Environment'
+    # Por aquí le llega al transporte la empresa del cliente (`company:` o `with_company`). Nunca sale a la red.
+    MARCA_EMPRESA = 'X-Trevol-Sdk-Empresa'
+    FALTA_EMPRESA = 'Con una llave de administración (tva_…), cada llamada a una ruta de una empresa necesita la empresa: pasa ' \
+                    "company: 'com_…' a Trevol::Client.new o usa trevol.with_company('com_…'). Las de trevol.account no la necesitan."
+    SOLO_CUENTA = 'Las operaciones de trevol.account piden una llave de administración (tva_test_… o tva_live_…); %s no se puede ' \
+                  'llamar con una llave de empresa (tvl_…).'
+
+    # Lo que necesita el middleware. La llave nunca sale en un inspect. `tipo_llave`: :api (tvl_) o :account (tva_); `entorno`: :test o :live.
+    Opciones = Struct.new(:llave, :tipo_llave, :entorno, :api_version, :user_agent, :max_reintentos, :max_retry_after, :ruta_base, :dormir,
+                          :azar, :uuid, :ahora, keyword_init: true) do
+      def inspect = "#<Trevol::Transporte::Opciones tipo_llave=#{tipo_llave.inspect} entorno=#{entorno.inspect} " \
+                    "api_version=#{api_version.inspect} max_reintentos=#{max_reintentos.inspect}>"
       alias_method :to_s, :inspect
     end
 
@@ -74,6 +87,15 @@ module Trevol
           indices[:plantillas].find { |o, re| o[:metodo] == metodo && re.match?(ruta) }&.first
       end
 
+      # Qué llave admite una ruta: 'api_o_administracion', 'administracion' o 'ninguna' (de la tabla de operaciones). Una ruta que la
+      # tabla no conoce (la API sumó una) se clasifica por su forma: /account… es de administración, /health no lleva llave.
+      def llave_de(op, ruta)
+        return op[:llave] if op && op[:llave]
+        return 'ninguna' if ruta == '/health'
+
+        ruta == '/account' || ruta.start_with?('/account/') ? 'administracion' : 'api_o_administracion'
+      end
+
       private
 
       def indices
@@ -103,6 +125,25 @@ module Trevol
       ruta = ruta.delete_prefix(@o.ruta_base) unless @o.ruta_base.to_s.empty?
       op = self.class.operacion(metodo, ruta)
       reintento = op ? op[:reintento] : (metodo == 'GET' ? 'seguro' : 'solo_429')
+      h = env.request_headers
+
+      # La empresa y el ambiente: solo con una tva_ y solo en las rutas de una empresa. Lo que la persona haya puesto a mano en esas
+      # cabeceras no se manda nunca (con una tvl_ la empresa sale de la llave). Sin empresa, el error es local: no sale nada a la red.
+      # Con una tvl_, las de /account (piden una tva_) también son un error local: la API respondería 401 invalid_api_key.
+      empresa = h.delete(MARCA_EMPRESA)
+      h.delete(COMPANY)
+      h.delete(ENVIRONMENT)
+      llave_de_ruta = self.class.llave_de(op, ruta)
+      if @o.tipo_llave == :api && llave_de_ruta == 'administracion'
+        nombre = op ? "trevol.account.#{op[:operation_id].gsub(/([a-z0-9])([A-Z])/, '\\1_\\2').downcase}" : "#{metodo} /v1#{ruta}"
+        raise ConfigurationError, format(SOLO_CUENTA, nombre)
+      end
+      if @o.tipo_llave == :account && llave_de_ruta == 'api_o_administracion'
+        raise ConfigurationError, FALTA_EMPRESA if empresa.nil? || empresa.to_s.empty?
+
+        h[COMPANY] = Llave.empresa(empresa)
+        h[ENVIRONMENT] = @o.entorno.to_s
+      end
 
       # La Idempotency-Key: una por llamada, la misma en todos los reintentos.
       clave = nil
@@ -118,7 +159,6 @@ module Trevol
       else
         env.request_headers.delete('Idempotency-Key')
       end
-      h = env.request_headers
       h['Authorization'] = "Bearer #{@o.llave}"
       h['Trevol-Version'] = @o.api_version
       h['User-Agent'] = @o.user_agent

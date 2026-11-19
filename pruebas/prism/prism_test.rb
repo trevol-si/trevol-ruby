@@ -107,6 +107,83 @@ class PrismTest < Minitest::Test
     assert_equal 'acquirer', a.object
   end
 
+  # --- La llave de administración (Prism no distingue tvl_ de tva_: las dos son bearer; la falta de empresa la cubren las unitarias) ---
+
+  ADMIN = "tva_live_#{'d4' * 32}"
+  EMPRESA = "com_#{'3f0c1a2b' * 4}"
+
+  def admin(**opciones) = Trevol::Client.new(ADMIN, base_url: URL, max_retries: 0, **opciones)
+
+  def test_administracion_la_llave_y_las_empresas_de_la_cuenta_con_paginate
+    t = admin
+    info = con_violaciones { t.account.retrieve_account }
+    assert_equal 'account_key_info', info.object
+    assert_match(/\Aacct_/, info.account.id)
+    empresas = con_violaciones { t.paginate { |c| t.account.list_account_companies(limit: 2, status: 'enabled', starting_after: c) }.first(3) }
+    refute_empty empresas
+    assert_kind_of TrevolGenerado::AccountCompany, empresas.first
+    assert_match(/\Acom_/, empresas.first.id)
+    c = con_violaciones { t.account.retrieve_account_company(EMPRESA) }
+    assert_equal 'company', c.object
+  end
+
+  def test_administracion_reserva_una_empresa_y_maneja_sus_llaves
+    t = admin
+    c = con_violaciones { t.account.create_account_company(ejemplo('createAccountCompany')) }
+    assert_equal 'pending', c.status
+    k = con_violaciones { t.account.create_account_company_api_key(EMPRESA, ejemplo('createAccountCompanyApiKey'), idempotency_key: 'ERP-BODEGA-1') }
+    assert_match(/\Atvl_/, k.token)
+    llaves = con_violaciones { t.paginate { |cur| t.account.list_account_company_api_keys(EMPRESA, status: 'active', starting_after: cur) }.first(3) }
+    refute_empty llaves
+    r = con_violaciones { t.account.revoke_account_company_api_key(EMPRESA, "key_#{'4b6d8f0a' * 4}") }
+    assert_equal 'revoked', r.status
+  end
+
+  def test_administracion_lo_emitido_lo_recibido_los_eventos_y_el_registro_de_la_cuenta
+    t = admin
+    docs = con_violaciones { t.account.list_account_dian_documents(company: EMPRESA, direction: 'received', issued_from: '2026-11-01', limit: 10) }
+    eventos = con_violaciones { t.account.list_account_radian_events(code: '030', limit: 10) }
+    peticiones = con_violaciones { t.account.list_account_requests(status: 401, limit: 10) }
+    [docs, eventos, peticiones].each { |l| assert_equal 'list', l.object }
+  end
+
+  def test_administracion_una_ruta_de_empresa_con_with_company
+    t = admin.with_company(EMPRESA)
+    doc = con_violaciones { t.invoices.create_invoice(ejemplo('createInvoice')) }
+    assert_equal 'invoice', doc.object
+    assert_equal 'company', con_violaciones { t.general.retrieve_company }.object
+  end
+
+  def test_administracion_company_exists_es_conflicterror_con_la_empresa
+    e = assert_raises(Trevol::ConflictError) { admin.account.create_account_company(ejemplo('createAccountCompany'), prefer('code=409, example=existe')) }
+    assert_equal 'company_exists', e.code
+    assert_match(/\Acom_/, e.problem[:company][:id])
+  end
+
+  # Prism inventa la cabecera Retry-After con el esquema (`minimum: 1` → 1) sin mirar el cuerpo; la API pone en ella el mismo valor de
+  # `retry_after`. Este middleware, más cerca del adaptador que el transporte del SDK, la quita para que el SDK lea la del cuerpo (1800),
+  # como si la cabecera dijera lo mismo.
+  class SinRetryAfter < Faraday::Middleware
+    def on_complete(env) = env.response_headers.delete('Retry-After')
+  end
+
+  def test_administracion_company_limit_reached_es_ratelimiterror_sin_esperar
+    esperas = []
+    t = Trevol::Client.new(ADMIN, base_url: URL, internos: { dormir: ->(s) { esperas << s }, conexion: ->(c) { c.use SinRetryAfter } })
+    e = assert_raises(Trevol::RateLimitError) { t.account.create_account_company(ejemplo('createAccountCompany'), prefer('code=429, example=altas')) }
+    assert_equal 'company_limit_reached', e.code
+    assert e.retryable?
+    assert_operator e.retry_after, :>, 60 # más que max_retry_after (60): el SDK no espera
+    assert_empty esperas
+  end
+
+  def test_administracion_key_limit_reached_es_conflicterror
+    e = assert_raises(Trevol::ConflictError) do
+      admin.account.create_account_company_api_key(EMPRESA, ejemplo('createAccountCompanyApiKey'), prefer('code=409, example=tope_llaves'))
+    end
+    assert_equal 'key_limit_reached', e.code
+  end
+
   def test_reintenta_contra_prism_con_la_misma_clave_y_agota_con_el_error_del_503
     esperas = []
     t = Trevol::Client.new(LLAVE, base_url: URL, max_retries: 1, internos: { dormir: ->(s) { esperas << s } })

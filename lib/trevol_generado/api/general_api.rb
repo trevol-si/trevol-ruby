@@ -73,7 +73,7 @@ module TrevolGenerado
     end
 
     # La empresa de la llave
-    # La empresa de la llave: NIT, razón social, ambiente y numeraciones activas. Desde la fase 3 trae `capabilities`, un resumen de lo que ESTA llave puede emitir ahora: documento soporte (con su numeración), documento equivalente (con los prefijos POS), nómina (`status`: `enabled`, `testing`, `not_registered` o `not_enabled`, según el ambiente de la llave) y eventos RADIAN (representante legal). Es informativo: si una lectura falla, esa clave no aparece.
+    # La empresa de la llave: NIT, razón social, ambiente y numeraciones activas. Desde la fase 3 trae `capabilities`, un resumen de lo que ESTA llave puede emitir ahora: documento soporte (con su numeración), documento equivalente (con los prefijos POS), nómina (`status`: `enabled`, `testing`, `not_registered` o `not_enabled`, según el ambiente de la llave) y eventos RADIAN (representante legal). Es informativo: si una lectura falla, esa clave no aparece. Con una llave de administración, la empresa es la de `Trevol-Company` y `key` es la identidad con que esa llave trabaja en la empresa (un `key_…` que no sale en `GET /v1/account/companies/{id}/api_keys`).
     # @param [Hash] opts the optional parameters
     # @return [Company]
     def retrieve_company(opts = {})
@@ -82,7 +82,7 @@ module TrevolGenerado
     end
 
     # La empresa de la llave
-    # La empresa de la llave: NIT, razón social, ambiente y numeraciones activas. Desde la fase 3 trae &#x60;capabilities&#x60;, un resumen de lo que ESTA llave puede emitir ahora: documento soporte (con su numeración), documento equivalente (con los prefijos POS), nómina (&#x60;status&#x60;: &#x60;enabled&#x60;, &#x60;testing&#x60;, &#x60;not_registered&#x60; o &#x60;not_enabled&#x60;, según el ambiente de la llave) y eventos RADIAN (representante legal). Es informativo: si una lectura falla, esa clave no aparece.
+    # La empresa de la llave: NIT, razón social, ambiente y numeraciones activas. Desde la fase 3 trae &#x60;capabilities&#x60;, un resumen de lo que ESTA llave puede emitir ahora: documento soporte (con su numeración), documento equivalente (con los prefijos POS), nómina (&#x60;status&#x60;: &#x60;enabled&#x60;, &#x60;testing&#x60;, &#x60;not_registered&#x60; o &#x60;not_enabled&#x60;, según el ambiente de la llave) y eventos RADIAN (representante legal). Es informativo: si una lectura falla, esa clave no aparece. Con una llave de administración, la empresa es la de &#x60;Trevol-Company&#x60; y &#x60;key&#x60; es la identidad con que esa llave trabaja en la empresa (un &#x60;key_…&#x60; que no sale en &#x60;GET /v1/account/companies/{id}/api_keys&#x60;).
     # @param [Hash] opts the optional parameters
     # @return [Array<(Company, Integer, Hash)>] Company data, response status code and response headers
     def retrieve_company_with_http_info(opts = {})

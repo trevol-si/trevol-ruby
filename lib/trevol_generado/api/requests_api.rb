@@ -20,7 +20,7 @@ module TrevolGenerado
       @api_client = api_client
     end
     # El registro de peticiones de la empresa y el ambiente de la llave (30 días)
-    # Cada petición que pasó la autenticación de una llave, aunque terminara en 403, 422 o 429. Sin cuerpos, consultas, IP ni llaves; `path` es la plantilla.
+    # Cada petición que pasó la autenticación de una llave, aunque terminara en 403, 422 o 429. Sin cuerpos, consultas, IP ni llaves; `path` es la plantilla. Lo que hizo una llave de administración en la empresa sale con el `key_…` de su identidad en la empresa (el de `GET /v1/company`); su propio registro, con la IP, está en `GET /v1/account/requests`.
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :limit 
     # @option opts [String] :starting_after 
@@ -35,7 +35,7 @@ module TrevolGenerado
     end
 
     # El registro de peticiones de la empresa y el ambiente de la llave (30 días)
-    # Cada petición que pasó la autenticación de una llave, aunque terminara en 403, 422 o 429. Sin cuerpos, consultas, IP ni llaves; &#x60;path&#x60; es la plantilla.
+    # Cada petición que pasó la autenticación de una llave, aunque terminara en 403, 422 o 429. Sin cuerpos, consultas, IP ni llaves; &#x60;path&#x60; es la plantilla. Lo que hizo una llave de administración en la empresa sale con el &#x60;key_…&#x60; de su identidad en la empresa (el de &#x60;GET /v1/company&#x60;); su propio registro, con la IP, está en &#x60;GET /v1/account/requests&#x60;.
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :limit 
     # @option opts [String] :starting_after 

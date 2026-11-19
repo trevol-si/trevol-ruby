@@ -3,6 +3,17 @@
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el versionado, [SemVer](https://semver.org/lang/es/): antes
 de la 1.0, un cambio incompatible sube el número menor.
 
+## [0.3.0] — sin publicar
+
+Regenerado con la llave de administración pública (la misma versión `2026-11-18` de la API; 159 operaciones y 70 tipos de evento).
+
+- Recurso nuevo `account`: las diez operaciones de `/v1/account` para quien lleva varias empresas en una cuenta (la llave, sus empresas, reservar una empresa, las llaves de cada empresa y lo emitido, lo recibido y los eventos RADIAN de todas). Piden una llave de administración (`tva_test_…` o `tva_live_…`).
+- `Trevol::Client` acepta la llave de administración: el entorno sale del prefijo (`tva_test_` → `:test`, `tva_live_` → `:live`) y `key_type` dice cuál es (`:api` o `:account`).
+- Opción `company:` y `with_company('com_…')` (un cliente derivado que comparte la conexión): con una `tva_…`, las rutas de una empresa llevan `Trevol-Company` y `Trevol-Environment`. Sin empresa, `ConfigurationError` antes de llamar. Con una `tvl_…`, `company:` y `with_company` son `ConfigurationError`, esas cabeceras nunca se mandan y las operaciones de `trevol.account` se niegan sin llamar (`ConfigurationError`).
+- Errores tipados para los códigos nuevos: `company_exists` y `key_limit_reached` → conflicto; `company_limit_reached` → límite (con `retry_after`).
+- `Problem` trae `company` (en `company_exists`), `balance_cop` y `price_cop` (en `insufficient_balance` de una operación cobrada); `required_permission` admite los permisos de la llave de administración.
+- La tabla de operaciones dice qué llave admite cada una (`llave`: `api_o_administracion`, `administracion` o `ninguna`).
+
 ## [0.2.0] — 2026-11-18
 
 Regenerado con la API de noviembre de 2026 (versión `2026-11-18`, la de los errores juntos; 149 operaciones y 70 tipos de evento).

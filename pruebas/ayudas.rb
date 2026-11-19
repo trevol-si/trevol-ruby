@@ -11,6 +11,9 @@ module Ayudas
   HEX = '3f0c1a2b' * 4
   LLAVE_TEST = "tvl_test_#{'a1' * 32}"
   LLAVE_LIVE = "tvl_live_#{'b2' * 32}"
+  ADMIN_TEST = "tva_test_#{'c3' * 32}"
+  ADMIN_LIVE = "tva_live_#{'d4' * 32}"
+  EMPRESA = "com_#{HEX}"
   ID_DOC = "inv_#{HEX}"
   DOCUMENTO = { id: ID_DOC, object: 'invoice', environment: 'test', status: 'accepted', number: 'SETP990012345', external_id: 'VENTA-2026-000123' }.freeze
   ENTRADA_FACTURA = { external_id: 'VENTA-2026-000123', customer: { final_consumer: true },

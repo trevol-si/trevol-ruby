@@ -1,0 +1,11 @@
+# Generado por sdks/herramientas/fragmentos.mjs: el fragmento de la documentación, apuntando a Prism. No editar.
+require 'trevol'
+
+trevol = Trevol::Client.new(base_url: ENV.fetch('TREVOL_PRISM_URL'), max_retries: 0) # lee TREVOL_API_KEY
+
+resultado = trevol.account.create_account_company_api_key(
+  'id_3f0c1a2b3f0c1a2b3f0c1a2b3f0c1a2b',
+  { name: 'ERP de la bodega', permissions: 'write' },
+  # idempotency_key: 'VENTA-2026-000123' # opcional: si falta, el SDK pone una y la repite en los reintentos
+)
+pp resultado.to_hash
