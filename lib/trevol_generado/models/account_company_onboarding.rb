@@ -19,7 +19,7 @@ module TrevolGenerado
     # Valores conocidos: `not_started`, `linking`, `preparing_software`, `sending_test_set`, `validating_test_set`, `done`, `stopped`.
     attr_accessor :step
 
-    # Con `status: stopped`, por qué se detuvo (el detalle se ve en la app); si no, null. Valores conocidos: `invalid_link`, `link_already_used`, `no_free_certificate`, `duplicate_email`, `missing_legal_representative`, `legal_representative_data`, `invalid_certificate`, `certificate_password`, `association_blocked`, `not_registered_for_testing`, `test_set_rejected`, `dian_portal_unavailable`, `captcha`, `internal_error`.
+    # Con `status: stopped`, por qué se detuvo (el detalle se ve en la app); si no, null. Valores conocidos: `invalid_link`, `link_already_used`, `no_free_certificate`, `duplicate_email`, `missing_legal_representative`, `legal_representative_data`, `invalid_certificate`, `certificate_password`, `association_blocked`, `not_registered_for_testing`, `test_set_rejected`, `dian_portal_unavailable`, `internal_error`.
     attr_accessor :stop_reason
 
     # Attribute mapping from ruby-style variable name to JSON key.
