@@ -15,7 +15,7 @@ require 'time'
 
 module TrevolGenerado
   class Numbering < ApiModelBase
-    # Prefijo de la resolución POS o de documento soporte que numera (el de `GET /v1/company` → `capabilities.equivalent_documents.pos_numbering` o `capabilities.support_documents.numbering`).
+    # Prefijo de la numeración (1 a 4 letras o dígitos, sin distinguir mayúsculas). Factura: una con `usable: true` en GET /v1/numbering_ranges (sin él, la predeterminada); POS y DS: GET /v1/company.
     attr_accessor :prefix
 
     # Attribute mapping from ruby-style variable name to JSON key.

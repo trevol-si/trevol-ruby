@@ -302,6 +302,8 @@ module TrevolGenerado
     # @option opts [String] :external_id 
     # @option opts [String] :created_from 
     # @option opts [String] :created_to 
+    # @option opts [String] :number El número completo exacto, como sale en &#x60;number&#x60; (p. ej. &#x60;SETP990000123&#x60;; sin prefijo, solo el consecutivo), sin ceros a la izquierda, espacios ni guiones. Puede traer más de un documento.
+    # @option opts [String] :prefix El prefijo exacto, como sale en &#x60;prefix&#x60;. Solo, lista una numeración; con &#x60;number&#x60;, quita la ambigüedad.
     # @return [SupportDocumentAdjustmentList]
     def list_support_document_adjustments(opts = {})
       data, _status_code, _headers = list_support_document_adjustments_with_http_info(opts)
@@ -317,6 +319,8 @@ module TrevolGenerado
     # @option opts [String] :external_id 
     # @option opts [String] :created_from 
     # @option opts [String] :created_to 
+    # @option opts [String] :number El número completo exacto, como sale en &#x60;number&#x60; (p. ej. &#x60;SETP990000123&#x60;; sin prefijo, solo el consecutivo), sin ceros a la izquierda, espacios ni guiones. Puede traer más de un documento.
+    # @option opts [String] :prefix El prefijo exacto, como sale en &#x60;prefix&#x60;. Solo, lista una numeración; con &#x60;number&#x60;, quita la ambigüedad.
     # @return [Array<(SupportDocumentAdjustmentList, Integer, Hash)>] SupportDocumentAdjustmentList data, response status code and response headers
     def list_support_document_adjustments_with_http_info(opts = {})
       if @api_client.config.debugging
@@ -333,6 +337,8 @@ module TrevolGenerado
       query_params[:'external_id'] = opts[:'external_id'] if !opts[:'external_id'].nil?
       query_params[:'created_from'] = opts[:'created_from'] if !opts[:'created_from'].nil?
       query_params[:'created_to'] = opts[:'created_to'] if !opts[:'created_to'].nil?
+      query_params[:'number'] = opts[:'number'] if !opts[:'number'].nil?
+      query_params[:'prefix'] = opts[:'prefix'] if !opts[:'prefix'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}

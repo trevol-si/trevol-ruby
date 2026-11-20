@@ -17,6 +17,7 @@ module Trevol
     PROBLEMA = 'application/problem+json'
     ACCEPT = {
       'pdf' => "application/pdf, #{PROBLEMA}", 'xml' => "application/xml, #{PROBLEMA}", 'zip' => "application/zip, #{PROBLEMA}",
+      'png' => "image/png, #{PROBLEMA}", # el logo de la empresa (0.4.0)
       'csv' => "text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, #{PROBLEMA}" # los reportes: CSV o Excel
     }.tap { |h| h.default = "application/json, #{PROBLEMA}" }.freeze
     CLAVE_VALIDA = /\A[!-~]{1,255}\z/

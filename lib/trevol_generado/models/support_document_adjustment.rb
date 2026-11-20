@@ -25,6 +25,9 @@ module TrevolGenerado
     # Valores conocidos: `test`, `live`.
     attr_accessor :environment
 
+    # Solo en el entorno SIMULADO (la empresa simulada de la cuenta): el objeto se validó, se calculó y se firmó como siempre, pero nunca llegó a la DIAN ni tiene validez. Un objeto real no lleva esta propiedad.
+    attr_accessor :simulated
+
     # `processing` solo en la versión 2026-10-22: la DIAN no confirmó y Trevol sigue resolviendo el documento (el resultado llega por GET y por webhook; no crees otro documento para la misma venta). En 2026-10-21 ese documento se ve como `error`. Valores conocidos: `pending`, `sending`, `accepted`, `rejected`, `error`, `processing`.
     attr_accessor :status
 
@@ -83,6 +86,7 @@ module TrevolGenerado
         :'id' => :'id',
         :'object' => :'object',
         :'environment' => :'environment',
+        :'simulated' => :'simulated',
         :'status' => :'status',
         :'number' => :'number',
         :'prefix' => :'prefix',
@@ -125,6 +129,7 @@ module TrevolGenerado
         :'id' => :'String',
         :'object' => :'String',
         :'environment' => :'String',
+        :'simulated' => :'Boolean',
         :'status' => :'String',
         :'number' => :'String',
         :'prefix' => :'String',
@@ -201,6 +206,10 @@ module TrevolGenerado
 
       if attributes.key?(:'environment')
         self.environment = attributes[:'environment']
+      end
+
+      if attributes.key?(:'simulated')
+        self.simulated = attributes[:'simulated']
       end
 
       if attributes.key?(:'status')
@@ -325,6 +334,7 @@ module TrevolGenerado
           id == o.id &&
           object == o.object &&
           environment == o.environment &&
+          simulated == o.simulated &&
           status == o.status &&
           number == o.number &&
           prefix == o.prefix &&
@@ -359,7 +369,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, object, environment, status, number, prefix, external_id, origin, qr, issued_at, items, payment, currency, totals, dian, delivery, created_at, updated_at, cuds, seller, notes, references, allowance_charges, concept, description, support_document].hash
+      [id, object, environment, simulated, status, number, prefix, external_id, origin, qr, issued_at, items, payment, currency, totals, dian, delivery, created_at, updated_at, cuds, seller, notes, references, allowance_charges, concept, description, support_document].hash
     end
 
     # Builds the object from hash

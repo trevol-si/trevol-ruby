@@ -368,6 +368,8 @@ module TrevolGenerado
     # @option opts [String] :employee_code 
     # @option opts [String] :period_end_from 
     # @option opts [String] :period_end_to 
+    # @option opts [String] :number El número completo exacto, como sale en &#x60;number&#x60; (p. ej. &#x60;SETP990000123&#x60;; sin prefijo, solo el consecutivo), sin ceros a la izquierda, espacios ni guiones. Puede traer más de un documento.
+    # @option opts [String] :prefix El prefijo exacto, como sale en &#x60;prefix&#x60;. Solo, lista una numeración; con &#x60;number&#x60;, quita la ambigüedad.
     # @return [PayrollAdjustmentList]
     def list_payroll_adjustments(opts = {})
       data, _status_code, _headers = list_payroll_adjustments_with_http_info(opts)
@@ -386,6 +388,8 @@ module TrevolGenerado
     # @option opts [String] :employee_code 
     # @option opts [String] :period_end_from 
     # @option opts [String] :period_end_to 
+    # @option opts [String] :number El número completo exacto, como sale en &#x60;number&#x60; (p. ej. &#x60;SETP990000123&#x60;; sin prefijo, solo el consecutivo), sin ceros a la izquierda, espacios ni guiones. Puede traer más de un documento.
+    # @option opts [String] :prefix El prefijo exacto, como sale en &#x60;prefix&#x60;. Solo, lista una numeración; con &#x60;number&#x60;, quita la ambigüedad.
     # @return [Array<(PayrollAdjustmentList, Integer, Hash)>] PayrollAdjustmentList data, response status code and response headers
     def list_payroll_adjustments_with_http_info(opts = {})
       if @api_client.config.debugging
@@ -405,6 +409,8 @@ module TrevolGenerado
       query_params[:'employee_code'] = opts[:'employee_code'] if !opts[:'employee_code'].nil?
       query_params[:'period_end_from'] = opts[:'period_end_from'] if !opts[:'period_end_from'].nil?
       query_params[:'period_end_to'] = opts[:'period_end_to'] if !opts[:'period_end_to'].nil?
+      query_params[:'number'] = opts[:'number'] if !opts[:'number'].nil?
+      query_params[:'prefix'] = opts[:'prefix'] if !opts[:'prefix'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}

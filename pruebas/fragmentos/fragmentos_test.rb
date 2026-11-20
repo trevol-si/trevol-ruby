@@ -19,7 +19,7 @@ class FragmentosTest < Minitest::Test
   LLAVE_ADMINISTRACION = "tva_test_#{'c4' * 32}"
 
   def test_la_estructura
-    assert_equal 159, OPERACIONES.size
+    assert_equal 178, OPERACIONES.size # 0.4.0: + 19
     assert_equal 10, DE_CUENTA.size
     assert_empty DE_CUENTA - OPERACIONES
     assert_equal OPERACIONES, Dir.children(PROGRAMAS).grep(/\.rb\z/).map { |f| File.basename(f, '.rb') }.sort

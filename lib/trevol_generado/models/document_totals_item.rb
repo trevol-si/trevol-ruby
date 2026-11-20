@@ -15,6 +15,7 @@ require 'time'
 
 module TrevolGenerado
   class DocumentTotalsItem < ApiModelBase
+    # Cantidad × precio SIN impuestos.
     attr_accessor :gross
 
     attr_accessor :discount
@@ -25,6 +26,12 @@ module TrevolGenerado
 
     attr_accessor :commercial_value
 
+    # Solo en las líneas con unit_price_includes_tax: el precio unitario sin impuestos que Trevol derivó (hasta 6 decimales), en la moneda de totals.
+    attr_accessor :net_unit_price
+
+    # Solo en las líneas con unit_price_includes_tax: line_extension más los impuestos de la línea, en la moneda de totals.
+    attr_accessor :total
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -32,7 +39,9 @@ module TrevolGenerado
         :'discount' => :'discount',
         :'line_extension' => :'line_extension',
         :'charge' => :'charge',
-        :'commercial_value' => :'commercial_value'
+        :'commercial_value' => :'commercial_value',
+        :'net_unit_price' => :'net_unit_price',
+        :'total' => :'total'
       }
     end
 
@@ -53,7 +62,9 @@ module TrevolGenerado
         :'discount' => :'String',
         :'line_extension' => :'String',
         :'charge' => :'String',
-        :'commercial_value' => :'String'
+        :'commercial_value' => :'String',
+        :'net_unit_price' => :'String',
+        :'total' => :'String'
       }
     end
 
@@ -108,6 +119,14 @@ module TrevolGenerado
       if attributes.key?(:'commercial_value')
         self.commercial_value = attributes[:'commercial_value']
       end
+
+      if attributes.key?(:'net_unit_price')
+        self.net_unit_price = attributes[:'net_unit_price']
+      end
+
+      if attributes.key?(:'total')
+        self.total = attributes[:'total']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -134,7 +153,9 @@ module TrevolGenerado
           discount == o.discount &&
           line_extension == o.line_extension &&
           charge == o.charge &&
-          commercial_value == o.commercial_value
+          commercial_value == o.commercial_value &&
+          net_unit_price == o.net_unit_price &&
+          total == o.total
     end
 
     # @see the `==` method
@@ -146,7 +167,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [gross, discount, line_extension, charge, commercial_value].hash
+      [gross, discount, line_extension, charge, commercial_value, net_unit_price, total].hash
     end
 
     # Builds the object from hash

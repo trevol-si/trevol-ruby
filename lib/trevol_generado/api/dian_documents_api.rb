@@ -146,7 +146,7 @@ module TrevolGenerado
     end
 
     # Lo que la empresa emitió y recibió según la DIAN (con Trevol o con otro sistema)
-    # Lo que la DIAN tiene de la empresa de la llave, emitido con Trevol o con cualquier otro sistema, tal como lo trajo la sincronización de Trevol («Sincronizar con la DIAN» en la app, o `POST /v1/dian_syncs`). `direction`: `issued` (por defecto: lo EMITIDO), `received` (lo RECIBIDO de los proveedores, por la sincronización o por el buzón de recepción; lo del buzón aparece cuando una sincronización con lo recibido ya lo trajo de la DIAN) o `all`. Del más nuevo al más viejo por fecha de expedición. Es de solo lectura y no se cobra; no tiene PDF ni acciones aquí (`cufe` lo identifica ante la DIAN). El XML de cualquiera se pide a la DIAN en el momento (`xml_available` y `GET /v1/dian_documents/{id}/xml`; el de lo emitido trae los datos personales del cliente y exige el permiso `customers:read` de la llave). Lo que se emitió con Trevol aparece también en su recurso (`/invoices`…) con el mismo `cufe`. Filtros: `type` y `issued_from` / `issued_to` (AAAA-MM-DD, incluidos). Paginación por cursor: `limit` (1 a 100, 20 por defecto) y `starting_after` (el `id` de la última fila que tienes, pedida con la misma `direction`).
+    # Lo que la DIAN tiene de la empresa de la llave, emitido con Trevol o con cualquier otro sistema, tal como lo trajo la sincronización de Trevol («Sincronizar con la DIAN» en la app, o `POST /v1/dian_syncs`). `direction`: `issued` (por defecto: lo EMITIDO), `received` (lo RECIBIDO de los proveedores, por la sincronización o por el buzón de recepción; lo del buzón aparece cuando una sincronización con lo recibido ya lo trajo de la DIAN) o `all`. Del más nuevo al más viejo por fecha de expedición. Es de solo lectura y no se cobra; no tiene PDF ni acciones aquí (`cufe` lo identifica ante la DIAN). El XML de cualquiera se pide a la DIAN en el momento (`xml_available` y `GET /v1/dian_documents/{id}/xml`; el de lo emitido trae los datos personales del cliente y exige el permiso `customers:read` de la llave). Lo que se emitió con Trevol aparece también en su recurso (`/invoices`…) con el mismo `cufe`. Filtros: `type`, `issued_from` / `issued_to` (AAAA-MM-DD, incluidos) y, para buscar un documento por su número, `number` (el número completo exacto, como sale en `number`: `?number=FE7595`) y `prefix` (el prefijo exacto). En lo recibido el número es el del proveedor y puede repetirse entre proveedores: por eso es una lista. Paginación por cursor: `limit` (1 a 100, 20 por defecto) y `starting_after` (el `id` de la última fila que tienes, pedida con la misma `direction`).
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :limit  (default to 20)
     # @option opts [String] :starting_after 
@@ -154,6 +154,8 @@ module TrevolGenerado
     # @option opts [String] :issued_from Desde esta fecha de expedición (incluida).
     # @option opts [String] :issued_to Hasta esta fecha de expedición (incluida).
     # @option opts [String] :direction &#x60;issued&#x60; (lo emitido, por defecto), &#x60;received&#x60; (lo recibido) o &#x60;all&#x60;. El cursor se pide con la misma. (default to 'issued')
+    # @option opts [String] :number El número completo exacto, como sale en &#x60;number&#x60; (sin prefijo, solo el consecutivo). En lo recibido es el del proveedor y puede repetirse entre proveedores.
+    # @option opts [String] :prefix El prefijo exacto, como sale en &#x60;prefix&#x60;. Solo, lista una numeración; con &#x60;number&#x60;, quita la ambigüedad.
     # @return [DianDocumentList]
     def list_dian_documents(opts = {})
       data, _status_code, _headers = list_dian_documents_with_http_info(opts)
@@ -161,7 +163,7 @@ module TrevolGenerado
     end
 
     # Lo que la empresa emitió y recibió según la DIAN (con Trevol o con otro sistema)
-    # Lo que la DIAN tiene de la empresa de la llave, emitido con Trevol o con cualquier otro sistema, tal como lo trajo la sincronización de Trevol («Sincronizar con la DIAN» en la app, o &#x60;POST /v1/dian_syncs&#x60;). &#x60;direction&#x60;: &#x60;issued&#x60; (por defecto: lo EMITIDO), &#x60;received&#x60; (lo RECIBIDO de los proveedores, por la sincronización o por el buzón de recepción; lo del buzón aparece cuando una sincronización con lo recibido ya lo trajo de la DIAN) o &#x60;all&#x60;. Del más nuevo al más viejo por fecha de expedición. Es de solo lectura y no se cobra; no tiene PDF ni acciones aquí (&#x60;cufe&#x60; lo identifica ante la DIAN). El XML de cualquiera se pide a la DIAN en el momento (&#x60;xml_available&#x60; y &#x60;GET /v1/dian_documents/{id}/xml&#x60;; el de lo emitido trae los datos personales del cliente y exige el permiso &#x60;customers:read&#x60; de la llave). Lo que se emitió con Trevol aparece también en su recurso (&#x60;/invoices&#x60;…) con el mismo &#x60;cufe&#x60;. Filtros: &#x60;type&#x60; y &#x60;issued_from&#x60; / &#x60;issued_to&#x60; (AAAA-MM-DD, incluidos). Paginación por cursor: &#x60;limit&#x60; (1 a 100, 20 por defecto) y &#x60;starting_after&#x60; (el &#x60;id&#x60; de la última fila que tienes, pedida con la misma &#x60;direction&#x60;).
+    # Lo que la DIAN tiene de la empresa de la llave, emitido con Trevol o con cualquier otro sistema, tal como lo trajo la sincronización de Trevol («Sincronizar con la DIAN» en la app, o &#x60;POST /v1/dian_syncs&#x60;). &#x60;direction&#x60;: &#x60;issued&#x60; (por defecto: lo EMITIDO), &#x60;received&#x60; (lo RECIBIDO de los proveedores, por la sincronización o por el buzón de recepción; lo del buzón aparece cuando una sincronización con lo recibido ya lo trajo de la DIAN) o &#x60;all&#x60;. Del más nuevo al más viejo por fecha de expedición. Es de solo lectura y no se cobra; no tiene PDF ni acciones aquí (&#x60;cufe&#x60; lo identifica ante la DIAN). El XML de cualquiera se pide a la DIAN en el momento (&#x60;xml_available&#x60; y &#x60;GET /v1/dian_documents/{id}/xml&#x60;; el de lo emitido trae los datos personales del cliente y exige el permiso &#x60;customers:read&#x60; de la llave). Lo que se emitió con Trevol aparece también en su recurso (&#x60;/invoices&#x60;…) con el mismo &#x60;cufe&#x60;. Filtros: &#x60;type&#x60;, &#x60;issued_from&#x60; / &#x60;issued_to&#x60; (AAAA-MM-DD, incluidos) y, para buscar un documento por su número, &#x60;number&#x60; (el número completo exacto, como sale en &#x60;number&#x60;: &#x60;?number&#x3D;FE7595&#x60;) y &#x60;prefix&#x60; (el prefijo exacto). En lo recibido el número es el del proveedor y puede repetirse entre proveedores: por eso es una lista. Paginación por cursor: &#x60;limit&#x60; (1 a 100, 20 por defecto) y &#x60;starting_after&#x60; (el &#x60;id&#x60; de la última fila que tienes, pedida con la misma &#x60;direction&#x60;).
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :limit  (default to 20)
     # @option opts [String] :starting_after 
@@ -169,6 +171,8 @@ module TrevolGenerado
     # @option opts [String] :issued_from Desde esta fecha de expedición (incluida).
     # @option opts [String] :issued_to Hasta esta fecha de expedición (incluida).
     # @option opts [String] :direction &#x60;issued&#x60; (lo emitido, por defecto), &#x60;received&#x60; (lo recibido) o &#x60;all&#x60;. El cursor se pide con la misma. (default to 'issued')
+    # @option opts [String] :number El número completo exacto, como sale en &#x60;number&#x60; (sin prefijo, solo el consecutivo). En lo recibido es el del proveedor y puede repetirse entre proveedores.
+    # @option opts [String] :prefix El prefijo exacto, como sale en &#x60;prefix&#x60;. Solo, lista una numeración; con &#x60;number&#x60;, quita la ambigüedad.
     # @return [Array<(DianDocumentList, Integer, Hash)>] DianDocumentList data, response status code and response headers
     def list_dian_documents_with_http_info(opts = {})
       if @api_client.config.debugging
@@ -193,6 +197,8 @@ module TrevolGenerado
       query_params[:'issued_from'] = opts[:'issued_from'] if !opts[:'issued_from'].nil?
       query_params[:'issued_to'] = opts[:'issued_to'] if !opts[:'issued_to'].nil?
       query_params[:'direction'] = opts[:'direction'] if !opts[:'direction'].nil?
+      query_params[:'number'] = opts[:'number'] if !opts[:'number'].nil?
+      query_params[:'prefix'] = opts[:'prefix'] if !opts[:'prefix'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}

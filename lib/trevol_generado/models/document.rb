@@ -24,6 +24,9 @@ module TrevolGenerado
     # Valores conocidos: `test`, `live`.
     attr_accessor :environment
 
+    # Solo en el entorno SIMULADO (la empresa simulada de la cuenta): el objeto se validó, se calculó y se firmó como siempre, pero nunca llegó a la DIAN ni tiene validez. Un objeto real no lleva esta propiedad.
+    attr_accessor :simulated
+
     # `processing` solo en la versión 2026-10-22: la DIAN no confirmó y Trevol sigue resolviendo el documento (el resultado llega por GET y por webhook; no crees otro documento para la misma venta). En 2026-10-21 ese documento se ve como `error`. Valores conocidos: `pending`, `sending`, `accepted`, `rejected`, `error`, `contingency`, `processing`.
     attr_accessor :status
 
@@ -85,12 +88,19 @@ module TrevolGenerado
 
     attr_accessor :updated_at
 
+    # El que pidió el documento, o null.
+    attr_accessor :pdf_design_id
+
+    # El diseño fijado al emitir; null mientras está pendiente.
+    attr_accessor :pdf_design
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
         :'id' => :'id',
         :'object' => :'object',
         :'environment' => :'environment',
+        :'simulated' => :'simulated',
         :'status' => :'status',
         :'number' => :'number',
         :'prefix' => :'prefix',
@@ -117,7 +127,9 @@ module TrevolGenerado
         :'dian' => :'dian',
         :'delivery' => :'delivery',
         :'created_at' => :'created_at',
-        :'updated_at' => :'updated_at'
+        :'updated_at' => :'updated_at',
+        :'pdf_design_id' => :'pdf_design_id',
+        :'pdf_design' => :'pdf_design'
       }
     end
 
@@ -137,6 +149,7 @@ module TrevolGenerado
         :'id' => :'String',
         :'object' => :'String',
         :'environment' => :'String',
+        :'simulated' => :'Boolean',
         :'status' => :'String',
         :'number' => :'String',
         :'prefix' => :'String',
@@ -163,7 +176,9 @@ module TrevolGenerado
         :'dian' => :'DianResult',
         :'delivery' => :'Delivery',
         :'created_at' => :'Time',
-        :'updated_at' => :'Time'
+        :'updated_at' => :'Time',
+        :'pdf_design_id' => :'String',
+        :'pdf_design' => :'PdfDesignApplied'
       }
     end
 
@@ -179,7 +194,9 @@ module TrevolGenerado
         :'issued_at',
         :'contingency',
         :'totals',
-        :'updated_at'
+        :'updated_at',
+        :'pdf_design_id',
+        :'pdf_design'
       ])
     end
 
@@ -219,6 +236,10 @@ module TrevolGenerado
 
       if attributes.key?(:'environment')
         self.environment = attributes[:'environment']
+      end
+
+      if attributes.key?(:'simulated')
+        self.simulated = attributes[:'simulated']
       end
 
       if attributes.key?(:'status')
@@ -330,6 +351,14 @@ module TrevolGenerado
       if attributes.key?(:'updated_at')
         self.updated_at = attributes[:'updated_at']
       end
+
+      if attributes.key?(:'pdf_design_id')
+        self.pdf_design_id = attributes[:'pdf_design_id']
+      end
+
+      if attributes.key?(:'pdf_design')
+        self.pdf_design = attributes[:'pdf_design']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -355,6 +384,7 @@ module TrevolGenerado
           id == o.id &&
           object == o.object &&
           environment == o.environment &&
+          simulated == o.simulated &&
           status == o.status &&
           number == o.number &&
           prefix == o.prefix &&
@@ -381,7 +411,9 @@ module TrevolGenerado
           dian == o.dian &&
           delivery == o.delivery &&
           created_at == o.created_at &&
-          updated_at == o.updated_at
+          updated_at == o.updated_at &&
+          pdf_design_id == o.pdf_design_id &&
+          pdf_design == o.pdf_design
     end
 
     # @see the `==` method
@@ -393,7 +425,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, object, environment, status, number, prefix, external_id, origin, cufe, cude, qr, issued_at, customer, items, payment, invoice, document_type, operation_type, currency, cop_totals, delivery_terms, shipment, due_diligence, interoperability, contingency, totals, dian, delivery, created_at, updated_at].hash
+      [id, object, environment, simulated, status, number, prefix, external_id, origin, cufe, cude, qr, issued_at, customer, items, payment, invoice, document_type, operation_type, currency, cop_totals, delivery_terms, shipment, due_diligence, interoperability, contingency, totals, dian, delivery, created_at, updated_at, pdf_design_id, pdf_design].hash
     end
 
     # Builds the object from hash

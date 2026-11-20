@@ -25,6 +25,9 @@ module TrevolGenerado
     # Valores conocidos: `test`, `live`.
     attr_accessor :environment
 
+    # Solo en la factura que pide `numbering`: la numeración que la numeraría (el prefijo normalizado), ya comprobada. No reserva número.
+    attr_accessor :numbering
+
     # Los totales calculados: la misma forma que `totals` del documento (en nómina, devengados, deducciones y total del comprobante).
     attr_accessor :totals
 
@@ -34,6 +37,7 @@ module TrevolGenerado
         :'object' => :'object',
         :'document' => :'document',
         :'environment' => :'environment',
+        :'numbering' => :'numbering',
         :'totals' => :'totals'
       }
     end
@@ -54,6 +58,7 @@ module TrevolGenerado
         :'object' => :'String',
         :'document' => :'String',
         :'environment' => :'String',
+        :'numbering' => :'PreviewNumbering',
         :'totals' => :'Hash<String, Object>'
       }
     end
@@ -103,6 +108,10 @@ module TrevolGenerado
         self.environment = attributes[:'environment']
       end
 
+      if attributes.key?(:'numbering')
+        self.numbering = attributes[:'numbering']
+      end
+
       if attributes.key?(:'totals')
         if (value = attributes[:'totals']).is_a?(Hash)
           self.totals = value
@@ -133,6 +142,7 @@ module TrevolGenerado
           object == o.object &&
           document == o.document &&
           environment == o.environment &&
+          numbering == o.numbering &&
           totals == o.totals
     end
 
@@ -145,7 +155,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [object, document, environment, totals].hash
+      [object, document, environment, numbering, totals].hash
     end
 
     # Builds the object from hash

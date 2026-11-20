@@ -428,6 +428,8 @@ module TrevolGenerado
     # @option opts [String] :external_id 
     # @option opts [String] :created_from 
     # @option opts [String] :created_to 
+    # @option opts [String] :number El número completo exacto, como sale en &#x60;number&#x60; (p. ej. &#x60;SETP990000123&#x60;; sin prefijo, solo el consecutivo), sin ceros a la izquierda, espacios ni guiones. Puede traer más de un documento.
+    # @option opts [String] :prefix El prefijo exacto, como sale en &#x60;prefix&#x60;. Solo, lista una numeración; con &#x60;number&#x60;, quita la ambigüedad.
     # @return [EquivalentDocumentAdjustmentList]
     def list_equivalent_document_adjustments(opts = {})
       data, _status_code, _headers = list_equivalent_document_adjustments_with_http_info(opts)
@@ -443,6 +445,8 @@ module TrevolGenerado
     # @option opts [String] :external_id 
     # @option opts [String] :created_from 
     # @option opts [String] :created_to 
+    # @option opts [String] :number El número completo exacto, como sale en &#x60;number&#x60; (p. ej. &#x60;SETP990000123&#x60;; sin prefijo, solo el consecutivo), sin ceros a la izquierda, espacios ni guiones. Puede traer más de un documento.
+    # @option opts [String] :prefix El prefijo exacto, como sale en &#x60;prefix&#x60;. Solo, lista una numeración; con &#x60;number&#x60;, quita la ambigüedad.
     # @return [Array<(EquivalentDocumentAdjustmentList, Integer, Hash)>] EquivalentDocumentAdjustmentList data, response status code and response headers
     def list_equivalent_document_adjustments_with_http_info(opts = {})
       if @api_client.config.debugging
@@ -459,6 +463,8 @@ module TrevolGenerado
       query_params[:'external_id'] = opts[:'external_id'] if !opts[:'external_id'].nil?
       query_params[:'created_from'] = opts[:'created_from'] if !opts[:'created_from'].nil?
       query_params[:'created_to'] = opts[:'created_to'] if !opts[:'created_to'].nil?
+      query_params[:'number'] = opts[:'number'] if !opts[:'number'].nil?
+      query_params[:'prefix'] = opts[:'prefix'] if !opts[:'prefix'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}
@@ -684,6 +690,79 @@ module TrevolGenerado
       data, status_code, headers = @api_client.call_api(:POST, local_var_path, new_options)
       if @api_client.config.debugging
         @api_client.config.logger.debug "API called: EquivalentDocumentAdjustmentsApi#send_equivalent_document_adjustment\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Reenviar el correo de una nota de ajuste del documento equivalente
+    # Reenvía el correo del documento validado: el mismo ZIP (el AttachedDocument y el PDF), la misma plantilla y el mismo asunto. Sin cuerpo, va al destinatario de siempre: en producción, el correo del comprador (`customer.email`); en habilitación, solo a quien emitió el documento (con «[PRUEBA – sin validez legal]» en el asunto). Con `to` (de 1 a 3 direcciones; solo producción y solo con el permiso `customers:read`, porque el ZIP trae los datos del comprador) va a esas direcciones, un correo por destinatario: nadie ve a los demás.  Solo sirve cuando el documento está validado y su correo original ya terminó (si todavía se está enviando o se va a reintentar, 409 `invalid_state` con `reason: delivery_pending` y `Retry-After`; si ya no está programada, `delivery_incomplete`, sin reintento). Si el correo original falló y ya no se va a reintentar, sí se puede reenviar. A una dirección que rebotó o se quejó no le volvemos a escribir (409 `email_suppressed`). Topes: 5 reenvíos por documento al día y 200 por empresa al día en producción (20 en habilitación; cuentan reenvíos, no destinatarios: con 3 direcciones, hasta 600 correos); al pasarse, 429 con `limit: \"email_resend\"` y `Retry-After` hasta la medianoche (hora de Colombia).  `Idempotency-Key` obligatoria: repetirla devuelve el mismo resultado sin volver a enviar. El reenvío queda en `delivery.email_resends` del documento (`last.deliveries` dice cómo le fue a cada destinatario del último reenvío, también si rebotó o se quejó después); `delivery.status` y `delivery.email` siguen hablando del correo original. Sin `customers:read`, las direcciones salen en `null`.
+    # @param id [String] 
+    # @param [Hash] opts the optional parameters
+    # @option opts [String] :idempotency_key Obligatoria: 1 a 255 caracteres ASCII visibles, única por pedido (7 días).
+    # @option opts [EmailResendRequest] :email_resend_request 
+    # @return [EmailResend]
+    def send_equivalent_document_adjustment_email(id, opts = {})
+      data, _status_code, _headers = send_equivalent_document_adjustment_email_with_http_info(id, opts)
+      data
+    end
+
+    # Reenviar el correo de una nota de ajuste del documento equivalente
+    # Reenvía el correo del documento validado: el mismo ZIP (el AttachedDocument y el PDF), la misma plantilla y el mismo asunto. Sin cuerpo, va al destinatario de siempre: en producción, el correo del comprador (&#x60;customer.email&#x60;); en habilitación, solo a quien emitió el documento (con «[PRUEBA – sin validez legal]» en el asunto). Con &#x60;to&#x60; (de 1 a 3 direcciones; solo producción y solo con el permiso &#x60;customers:read&#x60;, porque el ZIP trae los datos del comprador) va a esas direcciones, un correo por destinatario: nadie ve a los demás.  Solo sirve cuando el documento está validado y su correo original ya terminó (si todavía se está enviando o se va a reintentar, 409 &#x60;invalid_state&#x60; con &#x60;reason: delivery_pending&#x60; y &#x60;Retry-After&#x60;; si ya no está programada, &#x60;delivery_incomplete&#x60;, sin reintento). Si el correo original falló y ya no se va a reintentar, sí se puede reenviar. A una dirección que rebotó o se quejó no le volvemos a escribir (409 &#x60;email_suppressed&#x60;). Topes: 5 reenvíos por documento al día y 200 por empresa al día en producción (20 en habilitación; cuentan reenvíos, no destinatarios: con 3 direcciones, hasta 600 correos); al pasarse, 429 con &#x60;limit: \&quot;email_resend\&quot;&#x60; y &#x60;Retry-After&#x60; hasta la medianoche (hora de Colombia).  &#x60;Idempotency-Key&#x60; obligatoria: repetirla devuelve el mismo resultado sin volver a enviar. El reenvío queda en &#x60;delivery.email_resends&#x60; del documento (&#x60;last.deliveries&#x60; dice cómo le fue a cada destinatario del último reenvío, también si rebotó o se quejó después); &#x60;delivery.status&#x60; y &#x60;delivery.email&#x60; siguen hablando del correo original. Sin &#x60;customers:read&#x60;, las direcciones salen en &#x60;null&#x60;.
+    # @param id [String] 
+    # @param [Hash] opts the optional parameters
+    # @option opts [String] :idempotency_key Obligatoria: 1 a 255 caracteres ASCII visibles, única por pedido (7 días).
+    # @option opts [EmailResendRequest] :email_resend_request 
+    # @return [Array<(EmailResend, Integer, Hash)>] EmailResend data, response status code and response headers
+    def send_equivalent_document_adjustment_email_with_http_info(id, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: EquivalentDocumentAdjustmentsApi.send_equivalent_document_adjustment_email ...'
+      end
+      # verify the required parameter 'id' is set
+      if @api_client.config.client_side_validation && id.nil?
+        fail ArgumentError, "Missing the required parameter 'id' when calling EquivalentDocumentAdjustmentsApi.send_equivalent_document_adjustment_email"
+      end
+      # resource path
+      local_var_path = '/equivalent_document_adjustments/{id}/email'.sub('{id}', CGI.escape(id.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json', 'application/problem+json']) unless header_params['Accept']
+      # HTTP header 'Content-Type'
+      content_type = @api_client.select_header_content_type(['application/json'])
+      if !content_type.nil?
+          header_params['Content-Type'] = content_type
+      end
+      header_params[:'Idempotency-Key'] = opts[:'idempotency_key'] if !opts[:'idempotency_key'].nil?
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body] || @api_client.object_to_http_body(opts[:'email_resend_request'])
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'EmailResend'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['llave']
+
+      new_options = opts.merge(
+        :operation => :"EquivalentDocumentAdjustmentsApi.send_equivalent_document_adjustment_email",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:POST, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: EquivalentDocumentAdjustmentsApi#send_equivalent_document_adjustment_email\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
       end
       return data, status_code, headers
     end

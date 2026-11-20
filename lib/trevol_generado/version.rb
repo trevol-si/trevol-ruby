@@ -11,5 +11,5 @@ Generator version: 7.26.0
 =end
 
 module TrevolGenerado
-  VERSION = '0.3.1'
+  VERSION = '0.4.0'
 end

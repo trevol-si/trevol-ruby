@@ -21,7 +21,7 @@ module TrevolGenerado
 
     attr_accessor :status
 
-    # Valores conocidos: `authentication_required`, `automatic_mode_unavailable`, `certificate_problem`, `company_busy`, `company_exists`, `company_limit_reached`, `company_not_enabled`, `confirmation_required`, `dian_rejected`, `dian_unavailable`, `duplicate_customer`, `duplicate_document`, `duplicate_product`, `external_id_in_use`, `file_unavailable`, `idempotency_key_required`, `idempotency_key_reused`, `insufficient_balance`, `internal_error`, `invalid_api_key`, `invalid_json`, `invalid_request`, `invalid_state`, `key_limit_reached`, `method_not_allowed`, `not_found`, `numbering_request_in_progress`, `numbering_unavailable`, `paper_numbering_limit_reached`, `permission_denied`, `portal_read_required`, `previous_event_pending`, `range_protected`, `rate_limited`, `report_too_large`, `request_in_progress`, `tacit_acceptance_not_due`, `top_up_above_maximum`, `top_up_below_minimum`, `top_ups_unavailable`, `unsupported_version`, `validation_error`, `webhook_limit_reached`.
+    # Valores conocidos: `authentication_required`, `automatic_mode_unavailable`, `certificate_problem`, `company_busy`, `company_exists`, `company_limit_reached`, `company_not_enabled`, `confirmation_required`, `dian_rejected`, `dian_unavailable`, `duplicate_customer`, `duplicate_document`, `duplicate_product`, `external_id_in_use`, `file_unavailable`, `idempotency_key_required`, `idempotency_key_reused`, `insufficient_balance`, `internal_error`, `invalid_api_key`, `invalid_json`, `invalid_request`, `invalid_state`, `key_limit_reached`, `logo_invalid`, `method_not_allowed`, `not_found`, `numbering_request_in_progress`, `numbering_unavailable`, `paper_numbering_limit_reached`, `pdf_design_archived`, `pdf_design_in_use`, `pdf_design_invalid`, `pdf_design_limit_reached`, `pdf_design_outdated`, `permission_denied`, `portal_read_required`, `previous_event_pending`, `range_protected`, `rate_limited`, `report_too_large`, `request_in_progress`, `tacit_acceptance_not_due`, `top_up_above_maximum`, `top_up_below_minimum`, `top_ups_unavailable`, `unsupported_version`, `validation_error`, `webhook_limit_reached`.
     attr_accessor :code
 
     attr_accessor :detail
@@ -39,7 +39,7 @@ module TrevolGenerado
     # En `external_id_in_use` y `duplicate_document`: el id (con el prefijo de su clase) del recurso que ya existe. En `numbering_request_in_progress`: la solicitud en curso (`nreq_…`). En `duplicate_customer` y `duplicate_product`: el `cus_…` o `prod_…` que ya existe. No viene en un `duplicate_customer` por `document_number` pedido con una llave sin `customers:read` (diría de quién es ese documento).
     attr_accessor :existing_id
 
-    # En `company_not_enabled` (`missing_legal_representative`, `missing_pin`, `missing_software`, `payroll_not_enabled`) y en `numbering_unavailable` (`missing_technical_key`, `no_contingency_numbering`, `no_resolution`, `prefix_in_use`, `resolution_exhausted`, `resolution_expired`, `resolution_not_yet_valid`): por qué. En `automatic_mode_unavailable` (`credentials_missing`, `mandate_required`: falta el mandato para integraciones que se acepta en la app, `disabled`) y en `permission_denied` de una ruta que solo existe en producción (`live_mode_required`). En `permission_denied` de una llave de administración: `environment_mismatch` (`Trevol-Environment` no es el ambiente de la llave), `live_mode_required` (el alta de empresas pide una llave de producción) y `scope_list` (una llave con alcance de lista no da de alta empresas; como esa llave no puede tener `companies:write`, lo que llega en la práctica es el 403 con `required_permission: companies:write`). Valores conocidos: `credentials_missing`, `disabled`, `environment_mismatch`, `live_mode_required`, `mandate_required`, `missing_legal_representative`, `missing_pin`, `missing_software`, `missing_technical_key`, `no_contingency_numbering`, `no_resolution`, `payroll_not_enabled`, `prefix_in_use`, `resolution_exhausted`, `resolution_expired`, `resolution_not_yet_valid`, `scope_list`.
+    # En `company_not_enabled` (`missing_legal_representative`, `missing_pin`, `missing_software`, `payroll_not_enabled`), en `numbering_unavailable` (`missing_technical_key`, `no_contingency_numbering`, `no_resolution`, `prefix_in_use`, `resolution_exhausted`, `resolution_expired`, `resolution_not_yet_valid`) y en `invalid_state` al reenviar el correo (`delivery_incomplete`, `delivery_pending`, `email_suppressed`, `no_recipient`, `not_accepted`): por qué. En `automatic_mode_unavailable` (`credentials_missing`, `mandate_required`: falta el mandato para integraciones que se acepta en la app, `disabled`) y en `permission_denied` de una ruta que solo existe en producción (`live_mode_required`). En `permission_denied` de una llave de administración: `environment_mismatch` (`Trevol-Environment` no es el ambiente de la llave), `live_mode_required` (el alta de empresas pide una llave de producción) y `scope_list` (una llave con alcance de lista no da de alta empresas; como esa llave no puede tener `companies:write`, lo que llega en la práctica es el 403 con `required_permission: companies:write`). En `logo_invalid` (`animated`, `empty`, `svg_not_supported`, `too_large`, `too_many_pixels`, `too_small`, `unreadable`, `unsupported_format`) y en `permission_denied` del diseño del PDF (`pdf_design_writes_disabled`: el titular no permitió en la app que la API lo cambie). En `permission_denied` de una llave de la empresa simulada: `simulated_not_supported` (eso no existe en el entorno simulado: el adquiriente en la DIAN, RADIAN, el saldo y las recargas, el XML de un documento de la DIAN, el documento equivalente y la nómina; o el entorno simulado está apagado). Valores conocidos: `animated`, `credentials_missing`, `delivery_incomplete`, `delivery_pending`, `disabled`, `email_suppressed`, `empty`, `environment_mismatch`, `live_mode_required`, `mandate_required`, `missing_legal_representative`, `missing_pin`, `missing_software`, `missing_technical_key`, `no_contingency_numbering`, `no_recipient`, `no_resolution`, `not_accepted`, `payroll_not_enabled`, `pdf_design_writes_disabled`, `prefix_in_use`, `resolution_exhausted`, `resolution_expired`, `resolution_not_yet_valid`, `scope_list`, `simulated_not_supported`, `svg_not_supported`, `too_large`, `too_many_pixels`, `too_small`, `unreadable`, `unsupported_format`.
     attr_accessor :reason
 
     # En `previous_event_pending`: el evento que la DIAN todavía no muestra.
@@ -57,7 +57,7 @@ module TrevolGenerado
     # En `insufficient_balance` de una operación cobrada: lo que cuesta la operación, en pesos.
     attr_accessor :price_cop
 
-    # En `rate_limited`: qué límite se pasó. Con una llave de administración: `lecturas` (600 peticiones por minuto de la llave en `/v1/account`), `account_key` (el mismo contador, visto desde una ruta de empresa), `api_keys` (60 llaves de empresa creadas o revocadas por hora) y `account_queries` (60 consultas de documentos o eventos por minuto, sumando las llaves de la cuenta). En `company_limit_reached`: `hour` (20 altas por hora) o `day` (100 por día).
+    # En `rate_limited`: qué límite se pasó (`email_resend`: los reenvíos del correo de un documento o de la empresa en el día). Con una llave de administración: `lecturas` (600 peticiones por minuto de la llave en `/v1/account`), `account_key` (el mismo contador, visto desde una ruta de empresa), `api_keys` (60 llaves de empresa creadas o revocadas por hora) y `account_queries` (60 consultas de documentos o eventos por minuto, sumando las llaves de la cuenta). En `company_limit_reached`: `hour` (20 altas por hora) o `day` (100 por día). `simulated`: un tope del entorno simulado (los envíos por hora de todas las cuentas, o demasiados documentos o webhooks por procesar en tu empresa simulada o en todo el entorno).
     attr_accessor :limit
 
     # En `tacit_acceptance_not_due`: desde cuándo procede la aceptación tácita. `null` si la DIAN todavía no muestra el recibo del bien (032) de la compradora: consulta de nuevo en unos minutos con `GET /v1/invoices/{id}/tacit_acceptance`.
@@ -77,6 +77,12 @@ module TrevolGenerado
 
     # En `company_exists`: la empresa que ya está en la cuenta con ese NIT.
     attr_accessor :company
+
+    # En `pdf_design_invalid`: qué no cabe y en qué tipos de documento.
+    attr_accessor :findings
+
+    # En `pdf_design_outdated`: la versión actual del diseño.
+    attr_accessor :current_version
 
     # En `report_too_large`: cuántos documentos tiene lo pedido.
     attr_accessor :rows
@@ -111,6 +117,8 @@ module TrevolGenerado
         :'existing_active' => :'existing_active',
         :'required_permission' => :'required_permission',
         :'company' => :'company',
+        :'findings' => :'findings',
+        :'current_version' => :'current_version',
         :'rows' => :'rows',
         :'max_rows' => :'max_rows'
       }
@@ -153,6 +161,8 @@ module TrevolGenerado
         :'existing_active' => :'Boolean',
         :'required_permission' => :'String',
         :'company' => :'AccountCompany',
+        :'findings' => :'Array<ProblemFinding>',
+        :'current_version' => :'Integer',
         :'rows' => :'Integer',
         :'max_rows' => :'Integer'
       }
@@ -293,6 +303,16 @@ module TrevolGenerado
         self.company = attributes[:'company']
       end
 
+      if attributes.key?(:'findings')
+        if (value = attributes[:'findings']).is_a?(Array)
+          self.findings = value
+        end
+      end
+
+      if attributes.key?(:'current_version')
+        self.current_version = attributes[:'current_version']
+      end
+
       if attributes.key?(:'rows')
         self.rows = attributes[:'rows']
       end
@@ -346,6 +366,8 @@ module TrevolGenerado
           existing_active == o.existing_active &&
           required_permission == o.required_permission &&
           company == o.company &&
+          findings == o.findings &&
+          current_version == o.current_version &&
           rows == o.rows &&
           max_rows == o.max_rows
     end
@@ -359,7 +381,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [type, title, status, code, detail, retryable, retry_after, request_id, errors, document, existing_id, reason, previous, minimum_cop, maximum_cop, balance_cop, price_cop, limit, available_from, rules, current_software, existing_active, required_permission, company, rows, max_rows].hash
+      [type, title, status, code, detail, retryable, retry_after, request_id, errors, document, existing_id, reason, previous, minimum_cop, maximum_cop, balance_cop, price_cop, limit, available_from, rules, current_software, existing_active, required_permission, company, findings, current_version, rows, max_rows].hash
     end
 
     # Builds the object from hash

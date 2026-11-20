@@ -26,8 +26,11 @@ module TrevolGenerado
     # Número o texto decimal con punto («150000.50»).
     attr_accessor :quantity
 
-    # Precio unitario SIN impuestos.
+    # Precio unitario SIN impuestos (con unit_price_includes_tax, con ellos).
     attr_accessor :unit_price
+
+    # true: unit_price trae los impuestos de la línea; Trevol calcula el precio sin ellos.
+    attr_accessor :unit_price_includes_tax
 
     # Solo IVA: {code: \"01\", rate: 0 | 5 | 19} o {code: \"01\", excluded: true}.
     attr_accessor :taxes
@@ -47,6 +50,7 @@ module TrevolGenerado
         :'unit' => :'unit',
         :'quantity' => :'quantity',
         :'unit_price' => :'unit_price',
+        :'unit_price_includes_tax' => :'unit_price_includes_tax',
         :'taxes' => :'taxes',
         :'discounts' => :'discounts',
         :'charges' => :'charges',
@@ -72,6 +76,7 @@ module TrevolGenerado
         :'unit' => :'String',
         :'quantity' => :'String',
         :'unit_price' => :'String',
+        :'unit_price_includes_tax' => :'Boolean',
         :'taxes' => :'Array<SupportItemTax>',
         :'discounts' => :'Array<ItemAllowance>',
         :'charges' => :'Array<SupportItemCharge>',
@@ -135,6 +140,10 @@ module TrevolGenerado
         self.unit_price = attributes[:'unit_price']
       else
         self.unit_price = nil
+      end
+
+      if attributes.key?(:'unit_price_includes_tax')
+        self.unit_price_includes_tax = attributes[:'unit_price_includes_tax']
       end
 
       if attributes.key?(:'taxes')
@@ -230,6 +239,7 @@ module TrevolGenerado
           unit == o.unit &&
           quantity == o.quantity &&
           unit_price == o.unit_price &&
+          unit_price_includes_tax == o.unit_price_includes_tax &&
           taxes == o.taxes &&
           discounts == o.discounts &&
           charges == o.charges &&
@@ -245,7 +255,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [code, description, unit, quantity, unit_price, taxes, discounts, charges, standard_code].hash
+      [code, description, unit, quantity, unit_price, unit_price_includes_tax, taxes, discounts, charges, standard_code].hash
     end
 
     # Builds the object from hash

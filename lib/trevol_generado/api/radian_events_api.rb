@@ -164,6 +164,8 @@ module TrevolGenerado
     # @option opts [String] :created_to 
     # @option opts [String] :event_code 
     # @option opts [String] :invoice_cufe 
+    # @option opts [String] :number El número completo exacto del EVENTO, como sale en &#x60;number&#x60; (p. ej. &#x60;AR994000123&#x60;), no el de la factura (esa va con &#x60;invoice_cufe&#x60;).
+    # @option opts [String] :prefix El prefijo exacto del evento, como sale en &#x60;prefix&#x60; (&#x60;AR&#x60;, &#x60;RC&#x60;, &#x60;RB&#x60;, &#x60;AE&#x60; o &#x60;E0xx&#x60;). Para filtrar por tipo es mejor &#x60;event_code&#x60;.
     # @return [RadianEventList]
     def list_radian_events(opts = {})
       data, _status_code, _headers = list_radian_events_with_http_info(opts)
@@ -181,6 +183,8 @@ module TrevolGenerado
     # @option opts [String] :created_to 
     # @option opts [String] :event_code 
     # @option opts [String] :invoice_cufe 
+    # @option opts [String] :number El número completo exacto del EVENTO, como sale en &#x60;number&#x60; (p. ej. &#x60;AR994000123&#x60;), no el de la factura (esa va con &#x60;invoice_cufe&#x60;).
+    # @option opts [String] :prefix El prefijo exacto del evento, como sale en &#x60;prefix&#x60; (&#x60;AR&#x60;, &#x60;RC&#x60;, &#x60;RB&#x60;, &#x60;AE&#x60; o &#x60;E0xx&#x60;). Para filtrar por tipo es mejor &#x60;event_code&#x60;.
     # @return [Array<(RadianEventList, Integer, Hash)>] RadianEventList data, response status code and response headers
     def list_radian_events_with_http_info(opts = {})
       if @api_client.config.debugging
@@ -203,6 +207,8 @@ module TrevolGenerado
       query_params[:'created_to'] = opts[:'created_to'] if !opts[:'created_to'].nil?
       query_params[:'event_code'] = opts[:'event_code'] if !opts[:'event_code'].nil?
       query_params[:'invoice_cufe'] = opts[:'invoice_cufe'] if !opts[:'invoice_cufe'].nil?
+      query_params[:'number'] = opts[:'number'] if !opts[:'number'].nil?
+      query_params[:'prefix'] = opts[:'prefix'] if !opts[:'prefix'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}

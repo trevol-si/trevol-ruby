@@ -70,6 +70,11 @@ module TrevolGenerado
     # La transcripción (03) de una factura de papel: su número y fecha. La numeración sale del prefijo del papel.
     attr_accessor :contingency
 
+    attr_accessor :numbering
+
+    # El diseño del PDF de este documento (`pdd_…` o `classic`); gana al de la numeración y al predeterminado. `null` es lo mismo que no mandarlo. Guía: Diseño del PDF.
+    attr_accessor :pdf_design_id
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -92,7 +97,9 @@ module TrevolGenerado
         :'shipment' => :'shipment',
         :'due_diligence' => :'due_diligence',
         :'interoperability' => :'interoperability',
-        :'contingency' => :'contingency'
+        :'contingency' => :'contingency',
+        :'numbering' => :'numbering',
+        :'pdf_design_id' => :'pdf_design_id'
       }
     end
 
@@ -128,7 +135,9 @@ module TrevolGenerado
         :'shipment' => :'Shipment',
         :'due_diligence' => :'String',
         :'interoperability' => :'Interoperability',
-        :'contingency' => :'InvoiceContingencyInput'
+        :'contingency' => :'InvoiceContingencyInput',
+        :'numbering' => :'Numbering',
+        :'pdf_design_id' => :'String'
       }
     end
 
@@ -136,6 +145,7 @@ module TrevolGenerado
     def self.openapi_nullable
       Set.new([
         :'rounding',
+        :'pdf_design_id'
       ])
     end
 
@@ -256,6 +266,14 @@ module TrevolGenerado
       if attributes.key?(:'contingency')
         self.contingency = attributes[:'contingency']
       end
+
+      if attributes.key?(:'numbering')
+        self.numbering = attributes[:'numbering']
+      end
+
+      if attributes.key?(:'pdf_design_id')
+        self.pdf_design_id = attributes[:'pdf_design_id']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -312,7 +330,9 @@ module TrevolGenerado
           shipment == o.shipment &&
           due_diligence == o.due_diligence &&
           interoperability == o.interoperability &&
-          contingency == o.contingency
+          contingency == o.contingency &&
+          numbering == o.numbering &&
+          pdf_design_id == o.pdf_design_id
     end
 
     # @see the `==` method
@@ -324,7 +344,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [external_id, customer, items, payment, notes, period, references, allowance_charges, prepayments, withholdings, rounding, document_type, operation_type, currency, cop_totals, delivery_terms, shipment, due_diligence, interoperability, contingency].hash
+      [external_id, customer, items, payment, notes, period, references, allowance_charges, prepayments, withholdings, rounding, document_type, operation_type, currency, cop_totals, delivery_terms, shipment, due_diligence, interoperability, contingency, numbering, pdf_design_id].hash
     end
 
     # Builds the object from hash

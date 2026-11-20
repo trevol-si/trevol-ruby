@@ -23,6 +23,9 @@ module TrevolGenerado
     # Valores conocidos: `test`, `live`.
     attr_accessor :environment
 
+    # Solo en el entorno SIMULADO (la empresa simulada de la cuenta): el objeto se validó, se calculó y se firmó como siempre, pero nunca llegó a la DIAN ni tiene validez. Un objeto real no lleva esta propiedad.
+    attr_accessor :simulated
+
     # completed cuando todas sus facturas reservadas llegaron a un estado final. Valores conocidos: `processing`, `completed`.
     attr_accessor :status
 
@@ -41,6 +44,7 @@ module TrevolGenerado
         :'id' => :'id',
         :'object' => :'object',
         :'environment' => :'environment',
+        :'simulated' => :'simulated',
         :'status' => :'status',
         :'created_at' => :'created_at',
         :'completed_at' => :'completed_at',
@@ -65,6 +69,7 @@ module TrevolGenerado
         :'id' => :'String',
         :'object' => :'String',
         :'environment' => :'String',
+        :'simulated' => :'Boolean',
         :'status' => :'String',
         :'created_at' => :'Time',
         :'completed_at' => :'Time',
@@ -118,6 +123,10 @@ module TrevolGenerado
         self.environment = attributes[:'environment']
       end
 
+      if attributes.key?(:'simulated')
+        self.simulated = attributes[:'simulated']
+      end
+
       if attributes.key?(:'status')
         self.status = attributes[:'status']
       end
@@ -164,6 +173,7 @@ module TrevolGenerado
           id == o.id &&
           object == o.object &&
           environment == o.environment &&
+          simulated == o.simulated &&
           status == o.status &&
           created_at == o.created_at &&
           completed_at == o.completed_at &&
@@ -180,7 +190,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, object, environment, status, created_at, completed_at, counts, items].hash
+      [id, object, environment, simulated, status, created_at, completed_at, counts, items].hash
     end
 
     # Builds the object from hash
