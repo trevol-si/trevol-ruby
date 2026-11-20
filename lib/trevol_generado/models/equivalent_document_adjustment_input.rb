@@ -53,6 +53,9 @@ module TrevolGenerado
     # El documento que ajusta: {\"id\": \"pos_…\"} (de Trevol: validado, de la empresa y el ambiente de la llave) o {number, cude, issue_date, document_type, total?} si es de otra plataforma (`total` hace falta para anularlo).
     attr_accessor :equivalent_document
 
+    # El diseño del PDF de este documento (`pdd_…` o `classic`); gana al de la numeración y al predeterminado. `null` es lo mismo que no mandarlo. Guía: Diseño del PDF.
+    attr_accessor :pdf_design_id
+
     class EnumAttributeValidator
       attr_reader :datatype
       attr_reader :allowable_values
@@ -91,7 +94,8 @@ module TrevolGenerado
         :'note_type' => :'note_type',
         :'concept' => :'concept',
         :'description' => :'description',
-        :'equivalent_document' => :'equivalent_document'
+        :'equivalent_document' => :'equivalent_document',
+        :'pdf_design_id' => :'pdf_design_id'
       }
     end
 
@@ -121,7 +125,8 @@ module TrevolGenerado
         :'note_type' => :'String',
         :'concept' => :'String',
         :'description' => :'String',
-        :'equivalent_document' => :'EquivalentDocumentReference'
+        :'equivalent_document' => :'EquivalentDocumentReference',
+        :'pdf_design_id' => :'String'
       }
     end
 
@@ -129,6 +134,7 @@ module TrevolGenerado
     def self.openapi_nullable
       Set.new([
         :'rounding',
+        :'pdf_design_id'
       ])
     end
 
@@ -229,6 +235,10 @@ module TrevolGenerado
       else
         self.equivalent_document = nil
       end
+
+      if attributes.key?(:'pdf_design_id')
+        self.pdf_design_id = attributes[:'pdf_design_id']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -326,7 +336,8 @@ module TrevolGenerado
           note_type == o.note_type &&
           concept == o.concept &&
           description == o.description &&
-          equivalent_document == o.equivalent_document
+          equivalent_document == o.equivalent_document &&
+          pdf_design_id == o.pdf_design_id
     end
 
     # @see the `==` method
@@ -338,7 +349,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [external_id, customer, items, payment, notes, period, references, allowance_charges, prepayments, rounding, note_type, concept, description, equivalent_document].hash
+      [external_id, customer, items, payment, notes, period, references, allowance_charges, prepayments, rounding, note_type, concept, description, equivalent_document, pdf_design_id].hash
     end
 
     # Builds the object from hash

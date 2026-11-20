@@ -31,7 +31,7 @@ module TrevolGenerado
     # Eventos del catálogo (69 tipos, hasta 100 en la lista), o [\"*\"] para todos (no se mezcla). Solo existen en producción (llaves live): `balance.low`, `numbering.low`, `numbering.expiring`, `dian_sync.completed`, `dian_sync.failed`, `numbering_range.exhausted`. `webhook.test` no se suscribe.
     attr_accessor :events
 
-    # Qué catálogo recibe con `[\"*\"]`: `1` = el de la fase 2 (facturas, notas, saldo, numeración y certificado); `2` = también documento soporte, documento equivalente, nómina y eventos RADIAN; `3` = también lo recibido, la sincronización con la DIAN, la numeración automática, los lotes y la contingencia; `4` = también los clientes y productos del catálogo, el rango de numeración agotado y los reportes asíncronos. Un endpoint queda en el catálogo con que se guardó hasta que guardes de nuevo su lista de eventos (PATCH `events`); los nuevos nacen en 4. Una lista explícita siempre recibe lo que pide.
+    # Qué catálogo recibe con `[\"*\"]`: `1` = el de la fase 2 (facturas, notas, saldo, numeración y certificado); `2` = también documento soporte, documento equivalente, nómina y eventos RADIAN; `3` = también lo recibido, la sincronización con la DIAN, la numeración automática, los lotes y la contingencia; `4` = también los clientes y productos del catálogo, el rango de numeración agotado y los reportes asíncronos. Un endpoint queda en el catálogo con que se guardó hasta que guardes de nuevo su lista de eventos (PATCH `events`) o actives `follow_latest_catalog`; los nuevos nacen en 4. Una lista explícita siempre recibe lo que pide.
     attr_accessor :catalog_version
 
     # `paused`: lo pausaste tú. `disabled`: lo desactivó Trevol por fallos sostenidos (10 seguidos durante 5 días) o porque se revocó la llave que lo creó o lo cambió; se reactiva con PATCH status=enabled. Valores conocidos: `enabled`, `paused`, `disabled`.
@@ -39,6 +39,9 @@ module TrevolGenerado
 
     # `sustained_failures`: fallos sostenidos. `api_key_revoked`: se revocó la llave que lo creó o le cambió la URL, los eventos o el secreto; revísalo antes de reactivarlo. Valores conocidos: `sustained_failures`, `api_key_revoked`.
     attr_accessor :disabled_reason
+
+    # Con `events: [\"*\"]`, recibe el catálogo más nuevo sin volver a guardar la lista (y `catalog_version` dice ese catálogo). Por defecto false: un `[\"*\"]` se queda en el catálogo con que se guardó. Tu receptor tiene que ignorar los tipos que no conoce.
+    attr_accessor :follow_latest_catalog
 
     attr_accessor :secret_rotated_at
 
@@ -83,6 +86,7 @@ module TrevolGenerado
         :'catalog_version' => :'catalog_version',
         :'status' => :'status',
         :'disabled_reason' => :'disabled_reason',
+        :'follow_latest_catalog' => :'follow_latest_catalog',
         :'secret_rotated_at' => :'secret_rotated_at',
         :'created_at' => :'created_at',
         :'updated_at' => :'updated_at',
@@ -112,6 +116,7 @@ module TrevolGenerado
         :'catalog_version' => :'Integer',
         :'status' => :'String',
         :'disabled_reason' => :'String',
+        :'follow_latest_catalog' => :'Boolean',
         :'secret_rotated_at' => :'Time',
         :'created_at' => :'Time',
         :'updated_at' => :'Time',
@@ -194,6 +199,10 @@ module TrevolGenerado
         self.disabled_reason = attributes[:'disabled_reason']
       end
 
+      if attributes.key?(:'follow_latest_catalog')
+        self.follow_latest_catalog = attributes[:'follow_latest_catalog']
+      end
+
       if attributes.key?(:'secret_rotated_at')
         self.secret_rotated_at = attributes[:'secret_rotated_at']
       end
@@ -252,6 +261,7 @@ module TrevolGenerado
           catalog_version == o.catalog_version &&
           status == o.status &&
           disabled_reason == o.disabled_reason &&
+          follow_latest_catalog == o.follow_latest_catalog &&
           secret_rotated_at == o.secret_rotated_at &&
           created_at == o.created_at &&
           updated_at == o.updated_at &&
@@ -267,7 +277,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, object, environment, url, description, events, catalog_version, status, disabled_reason, secret_rotated_at, created_at, updated_at, secret].hash
+      [id, object, environment, url, description, events, catalog_version, status, disabled_reason, follow_latest_catalog, secret_rotated_at, created_at, updated_at, secret].hash
     end
 
     # Builds the object from hash

@@ -90,6 +90,12 @@ module TrevolGenerado
 
     attr_accessor :contingency
 
+    # El que pidió el documento, o null.
+    attr_accessor :pdf_design_id
+
+    # El diseño fijado al emitir; null mientras está pendiente.
+    attr_accessor :pdf_design
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -124,7 +130,9 @@ module TrevolGenerado
         :'pos' => :'pos',
         :'extension' => :'extension',
         :'origin_note' => :'origin_note',
-        :'contingency' => :'contingency'
+        :'contingency' => :'contingency',
+        :'pdf_design_id' => :'pdf_design_id',
+        :'pdf_design' => :'pdf_design'
       }
     end
 
@@ -172,7 +180,9 @@ module TrevolGenerado
         :'pos' => :'Pos',
         :'extension' => :'Extension',
         :'origin_note' => :'OriginNote',
-        :'contingency' => :'EquivalentDocumentContingency'
+        :'contingency' => :'EquivalentDocumentContingency',
+        :'pdf_design_id' => :'String',
+        :'pdf_design' => :'PdfDesignApplied'
       }
     end
 
@@ -188,7 +198,9 @@ module TrevolGenerado
         :'totals',
         :'updated_at',
         :'rounding',
-        :'contingency'
+        :'contingency',
+        :'pdf_design_id',
+        :'pdf_design'
       ])
     end
 
@@ -355,6 +367,14 @@ module TrevolGenerado
       if attributes.key?(:'contingency')
         self.contingency = attributes[:'contingency']
       end
+
+      if attributes.key?(:'pdf_design_id')
+        self.pdf_design_id = attributes[:'pdf_design_id']
+      end
+
+      if attributes.key?(:'pdf_design')
+        self.pdf_design = attributes[:'pdf_design']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -408,7 +428,9 @@ module TrevolGenerado
           pos == o.pos &&
           extension == o.extension &&
           origin_note == o.origin_note &&
-          contingency == o.contingency
+          contingency == o.contingency &&
+          pdf_design_id == o.pdf_design_id &&
+          pdf_design == o.pdf_design
     end
 
     # @see the `==` method
@@ -420,7 +442,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, object, environment, status, number, prefix, external_id, origin, cude, qr, issued_at, customer, items, payment, document_type, operation_type, totals, dian, delivery, created_at, updated_at, notes, period, references, allowance_charges, prepayments, rounding, withholdings, pos, extension, origin_note, contingency].hash
+      [id, object, environment, status, number, prefix, external_id, origin, cude, qr, issued_at, customer, items, payment, document_type, operation_type, totals, dian, delivery, created_at, updated_at, notes, period, references, allowance_charges, prepayments, rounding, withholdings, pos, extension, origin_note, contingency, pdf_design_id, pdf_design].hash
     end
 
     # Builds the object from hash

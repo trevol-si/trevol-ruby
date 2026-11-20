@@ -260,7 +260,7 @@ class AdministracionTest < Minitest::Test
     datos = Ayudas.datos('operaciones.json').to_h { |o| [o['operationId'], o['llave']] }
     tabla = TrevolGenerado::Tablas::OPERACIONES.to_h { |o| [o[:operation_id], o[:llave]] }
     assert_equal datos, tabla
-    assert_equal({ 'administracion' => 10, 'api_o_administracion' => 148, 'ninguna' => 1 }, tabla.values.tally)
+    assert_equal({ 'administracion' => 10, 'api_o_administracion' => 167, 'ninguna' => 1 }, tabla.values.tally) # 0.4.0: + 19
   end
 
   def test_una_ruta_que_la_tabla_no_conoce_se_clasifica_por_su_forma

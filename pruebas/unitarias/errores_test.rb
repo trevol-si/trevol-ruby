@@ -11,8 +11,8 @@ class ErroresTest < Minitest::Test
              'BalanceError' => 402, 'RateLimitError' => 429, 'DianUnavailableError' => 503, 'InternalServerError' => 500 }.freeze
   TODOS = Ayudas.datos('errores.json')['clases'].flat_map { |clase, codes| codes.map { |code| [clase, code] } }
 
-  def test_cubre_los_30_code
-    assert_equal 43, TODOS.size
+  def test_cubre_los_49_code
+    assert_equal 49, TODOS.size # 43 + los 6 del diseño del PDF (0.4.0)
   end
 
   TODOS.each do |clase, code|

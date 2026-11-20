@@ -27,6 +27,9 @@ module TrevolGenerado
 
     attr_accessor :email
 
+    # Los reenvíos del correo con `POST …/{id}/email`; null si nunca se reenvió. `status` y `email` siguen hablando del correo original. `last.deliveries` dice cómo le fue a cada destinatario del último reenvío, también si rebotó o se quejó después. Sin `customers:read`, `last.to` y `last.deliveries[].to` salen en null.
+    attr_accessor :email_resends
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -34,7 +37,8 @@ module TrevolGenerado
         :'pdf' => :'pdf',
         :'zip' => :'zip',
         :'xml' => :'xml',
-        :'email' => :'email'
+        :'email' => :'email',
+        :'email_resends' => :'email_resends'
       }
     end
 
@@ -55,7 +59,8 @@ module TrevolGenerado
         :'pdf' => :'Boolean',
         :'zip' => :'Boolean',
         :'xml' => :'Boolean',
-        :'email' => :'DeliveryEmail'
+        :'email' => :'DeliveryEmail',
+        :'email_resends' => :'DeliveryEmailResends'
       }
     end
 
@@ -63,7 +68,8 @@ module TrevolGenerado
     def self.openapi_nullable
       Set.new([
         :'status',
-        :'email'
+        :'email',
+        :'email_resends'
       ])
     end
 
@@ -112,6 +118,10 @@ module TrevolGenerado
       if attributes.key?(:'email')
         self.email = attributes[:'email']
       end
+
+      if attributes.key?(:'email_resends')
+        self.email_resends = attributes[:'email_resends']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -138,7 +148,8 @@ module TrevolGenerado
           pdf == o.pdf &&
           zip == o.zip &&
           xml == o.xml &&
-          email == o.email
+          email == o.email &&
+          email_resends == o.email_resends
     end
 
     # @see the `==` method
@@ -150,7 +161,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [status, pdf, zip, xml, email].hash
+      [status, pdf, zip, xml, email, email_resends].hash
     end
 
     # Builds the object from hash

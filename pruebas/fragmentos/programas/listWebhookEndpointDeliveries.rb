@@ -3,6 +3,6 @@ require 'trevol'
 
 trevol = Trevol::Client.new(base_url: ENV.fetch('TREVOL_PRISM_URL'), max_retries: 0) # lee TREVOL_API_KEY
 
-trevol.paginate { |cursor| trevol.webhook_endpoints.list_webhook_endpoint_deliveries(limit: 100, starting_after: cursor) }.each do |item|
+trevol.paginate { |cursor| trevol.webhook_endpoints.list_webhook_endpoint_deliveries('we_3f0c1a2b3f0c1a2b3f0c1a2b3f0c1a2b', limit: 100, starting_after: cursor) }.each do |item|
   puts item.id
 end

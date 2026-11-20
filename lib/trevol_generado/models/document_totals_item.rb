@@ -15,6 +15,7 @@ require 'time'
 
 module TrevolGenerado
   class DocumentTotalsItem < ApiModelBase
+    # Cantidad × precio SIN impuestos.
     attr_accessor :gross
 
     attr_accessor :discount

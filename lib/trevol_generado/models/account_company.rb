@@ -21,6 +21,9 @@ module TrevolGenerado
     # Valores conocidos: `company`.
     attr_accessor :object
 
+    # Solo en el entorno SIMULADO (la empresa simulada de la cuenta): el objeto se validó, se calculó y se firmó como siempre, pero nunca llegó a la DIAN ni tiene validez. Un objeto real no lleva esta propiedad. En la empresa de `/v1/account/companies`: solo la ve una llave de administración de pruebas (`tva_test_…`); para una de producción no existe.
+    attr_accessor :simulated
+
     # El NIT, sin DV.
     attr_accessor :nit
 
@@ -58,6 +61,7 @@ module TrevolGenerado
       {
         :'id' => :'id',
         :'object' => :'object',
+        :'simulated' => :'simulated',
         :'nit' => :'nit',
         :'check_digit' => :'check_digit',
         :'name' => :'name',
@@ -87,6 +91,7 @@ module TrevolGenerado
       {
         :'id' => :'String',
         :'object' => :'String',
+        :'simulated' => :'Boolean',
         :'nit' => :'String',
         :'check_digit' => :'String',
         :'name' => :'String',
@@ -144,6 +149,10 @@ module TrevolGenerado
 
       if attributes.key?(:'object')
         self.object = attributes[:'object']
+      end
+
+      if attributes.key?(:'simulated')
+        self.simulated = attributes[:'simulated']
       end
 
       if attributes.key?(:'nit')
@@ -213,6 +222,7 @@ module TrevolGenerado
       self.class == o.class &&
           id == o.id &&
           object == o.object &&
+          simulated == o.simulated &&
           nit == o.nit &&
           check_digit == o.check_digit &&
           name == o.name &&
@@ -235,7 +245,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, object, nit, check_digit, name, trade_name, status, onboarding, emission_environment, created_at, enabled_at, onboarding_url, api_keys].hash
+      [id, object, simulated, nit, check_digit, name, trade_name, status, onboarding, emission_environment, created_at, enabled_at, onboarding_url, api_keys].hash
     end
 
     # Builds the object from hash

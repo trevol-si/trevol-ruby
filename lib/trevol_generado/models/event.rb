@@ -30,6 +30,9 @@ module TrevolGenerado
     # Valores conocidos: `test`, `live`.
     attr_accessor :environment
 
+    # Solo en el entorno SIMULADO (la empresa simulada de la cuenta): el objeto se validó, se calculó y se firmó como siempre, pero nunca llegó a la DIAN ni tiene validez. Un objeto real no lleva esta propiedad.
+    attr_accessor :simulated
+
     # La versión del formato de los eventos (hoy `2026-10-22`), la misma para todas las llaves: el resumen del documento no cambia con la versión de la llave.
     attr_accessor :api_version
 
@@ -44,6 +47,7 @@ module TrevolGenerado
         :'type' => :'type',
         :'timestamp' => :'timestamp',
         :'environment' => :'environment',
+        :'simulated' => :'simulated',
         :'api_version' => :'api_version',
         :'data' => :'data'
       }
@@ -67,6 +71,7 @@ module TrevolGenerado
         :'type' => :'String',
         :'timestamp' => :'Time',
         :'environment' => :'String',
+        :'simulated' => :'Boolean',
         :'api_version' => :'String',
         :'data' => :'Hash<String, Object>'
       }
@@ -124,6 +129,10 @@ module TrevolGenerado
         self.environment = attributes[:'environment']
       end
 
+      if attributes.key?(:'simulated')
+        self.simulated = attributes[:'simulated']
+      end
+
       if attributes.key?(:'api_version')
         self.api_version = attributes[:'api_version']
       end
@@ -160,6 +169,7 @@ module TrevolGenerado
           type == o.type &&
           timestamp == o.timestamp &&
           environment == o.environment &&
+          simulated == o.simulated &&
           api_version == o.api_version &&
           data == o.data
     end
@@ -173,7 +183,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, object, type, timestamp, environment, api_version, data].hash
+      [id, object, type, timestamp, environment, simulated, api_version, data].hash
     end
 
     # Builds the object from hash

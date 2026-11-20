@@ -23,6 +23,9 @@ module TrevolGenerado
     # Eventos del catálogo (69 tipos, hasta 100 en la lista), o [\"*\"] para todos (no se mezcla). Solo existen en producción (llaves live): `balance.low`, `numbering.low`, `numbering.expiring`, `dian_sync.completed`, `dian_sync.failed`, `numbering_range.exhausted`. `webhook.test` no se suscribe.
     attr_accessor :events
 
+    # Solo con `events: [\"*\"]` (si no, 422 en `/follow_latest_catalog`): el endpoint sigue el catálogo más nuevo. Cambiar a una lista explícita lo apaga.
+    attr_accessor :follow_latest_catalog
+
     # enabled reactiva (también uno desactivado por Trevol) y pone en cero el contador de fallos.
     attr_accessor :status
 
@@ -54,6 +57,7 @@ module TrevolGenerado
         :'url' => :'url',
         :'description' => :'description',
         :'events' => :'events',
+        :'follow_latest_catalog' => :'follow_latest_catalog',
         :'status' => :'status'
       }
     end
@@ -74,6 +78,7 @@ module TrevolGenerado
         :'url' => :'String',
         :'description' => :'String',
         :'events' => :'Array<String>',
+        :'follow_latest_catalog' => :'Boolean',
         :'status' => :'String'
       }
     end
@@ -125,6 +130,10 @@ module TrevolGenerado
         end
       end
 
+      if attributes.key?(:'follow_latest_catalog')
+        self.follow_latest_catalog = attributes[:'follow_latest_catalog']
+      end
+
       if attributes.key?(:'status')
         self.status = attributes[:'status']
       end
@@ -165,6 +174,7 @@ module TrevolGenerado
           url == o.url &&
           description == o.description &&
           events == o.events &&
+          follow_latest_catalog == o.follow_latest_catalog &&
           status == o.status
     end
 
@@ -177,7 +187,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [url, description, events, status].hash
+      [url, description, events, follow_latest_catalog, status].hash
     end
 
     # Builds the object from hash

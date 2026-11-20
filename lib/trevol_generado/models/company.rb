@@ -36,6 +36,9 @@ module TrevolGenerado
     # Valores conocidos: `test`, `live`.
     attr_accessor :environment
 
+    # Solo en el entorno SIMULADO (la empresa simulada de la cuenta): el objeto se validó, se calculó y se firmó como siempre, pero nunca llegó a la DIAN ni tiene validez. Un objeto real no lleva esta propiedad.
+    attr_accessor :simulated
+
     # Las numeraciones (resoluciones) activas del ambiente de la llave.
     attr_accessor :numbering
 
@@ -56,6 +59,7 @@ module TrevolGenerado
         :'trade_name' => :'trade_name',
         :'status' => :'status',
         :'environment' => :'environment',
+        :'simulated' => :'simulated',
         :'numbering' => :'numbering',
         :'key' => :'key',
         :'capabilities' => :'capabilities'
@@ -83,6 +87,7 @@ module TrevolGenerado
         :'trade_name' => :'String',
         :'status' => :'String',
         :'environment' => :'String',
+        :'simulated' => :'Boolean',
         :'numbering' => :'Array<CompanyNumbering>',
         :'key' => :'CompanyKey',
         :'capabilities' => :'Hash<String, Object>'
@@ -158,6 +163,10 @@ module TrevolGenerado
         self.environment = attributes[:'environment']
       end
 
+      if attributes.key?(:'simulated')
+        self.simulated = attributes[:'simulated']
+      end
+
       if attributes.key?(:'numbering')
         if (value = attributes[:'numbering']).is_a?(Array)
           self.numbering = value
@@ -203,6 +212,7 @@ module TrevolGenerado
           trade_name == o.trade_name &&
           status == o.status &&
           environment == o.environment &&
+          simulated == o.simulated &&
           numbering == o.numbering &&
           key == o.key &&
           capabilities == o.capabilities
@@ -217,7 +227,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [object, id, nit, check_digit, name, trade_name, status, environment, numbering, key, capabilities].hash
+      [object, id, nit, check_digit, name, trade_name, status, environment, simulated, numbering, key, capabilities].hash
     end
 
     # Builds the object from hash

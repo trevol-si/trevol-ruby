@@ -59,7 +59,12 @@ module Trevol
       products: TrevolGenerado::ProductsApi,
       radian_status: TrevolGenerado::RadianStatusApi,
       report_runs: TrevolGenerado::ReportRunsApi,
-      reports: TrevolGenerado::ReportsApi
+      reports: TrevolGenerado::ReportsApi,
+      # 0.4.0: las listas de valores y el diseño del PDF (plantillas, diseños, ajustes y logo de la empresa).
+      catalogs: TrevolGenerado::CatalogsApi,
+      company_settings: TrevolGenerado::CompanySettingsApi,
+      pdf_designs: TrevolGenerado::PdfDesignsApi,
+      pdf_templates: TrevolGenerado::PdfTemplatesApi
     }.freeze
 
     RECURSOS.each_key { |nombre| attr_reader nombre }

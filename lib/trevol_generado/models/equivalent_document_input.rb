@@ -68,6 +68,9 @@ module TrevolGenerado
     # Solo en el POS: el prefijo de la resolución POS que numera (una empresa con varias cajas o establecimientos tiene varias). Sin él, la más nueva vigente. Si no existe, `numbering_unavailable` (`no_resolution`).
     attr_accessor :numbering
 
+    # El diseño del PDF de este documento (`pdd_…` o `classic`); gana al de la numeración y al predeterminado. `null` es lo mismo que no mandarlo. Guía: Diseño del PDF.
+    attr_accessor :pdf_design_id
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -89,7 +92,8 @@ module TrevolGenerado
         :'prefix' => :'prefix',
         :'origin_note' => :'origin_note',
         :'contingency' => :'contingency',
-        :'numbering' => :'numbering'
+        :'numbering' => :'numbering',
+        :'pdf_design_id' => :'pdf_design_id'
       }
     end
 
@@ -124,7 +128,8 @@ module TrevolGenerado
         :'prefix' => :'String',
         :'origin_note' => :'OriginNote',
         :'contingency' => :'Contingency',
-        :'numbering' => :'Numbering'
+        :'numbering' => :'Numbering',
+        :'pdf_design_id' => :'String'
       }
     end
 
@@ -132,6 +137,7 @@ module TrevolGenerado
     def self.openapi_nullable
       Set.new([
         :'rounding',
+        :'pdf_design_id'
       ])
     end
 
@@ -248,6 +254,10 @@ module TrevolGenerado
       if attributes.key?(:'numbering')
         self.numbering = attributes[:'numbering']
       end
+
+      if attributes.key?(:'pdf_design_id')
+        self.pdf_design_id = attributes[:'pdf_design_id']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -303,7 +313,8 @@ module TrevolGenerado
           prefix == o.prefix &&
           origin_note == o.origin_note &&
           contingency == o.contingency &&
-          numbering == o.numbering
+          numbering == o.numbering &&
+          pdf_design_id == o.pdf_design_id
     end
 
     # @see the `==` method
@@ -315,7 +326,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [external_id, customer, items, payment, notes, period, references, allowance_charges, prepayments, withholdings, rounding, document_type, operation_type, pos, extension, prefix, origin_note, contingency, numbering].hash
+      [external_id, customer, items, payment, notes, period, references, allowance_charges, prepayments, withholdings, rounding, document_type, operation_type, pos, extension, prefix, origin_note, contingency, numbering, pdf_design_id].hash
     end
 
     # Builds the object from hash

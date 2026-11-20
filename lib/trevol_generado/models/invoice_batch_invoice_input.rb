@@ -14,7 +14,7 @@ require 'date'
 require 'time'
 
 module TrevolGenerado
-  # El cuerpo de `POST /v1/invoices` (los campos y las reglas de InvoiceInput) más su `idempotency_key`. Sin `contingency` (la 03 va sola).
+  # El cuerpo de `POST /v1/invoices` (los campos y las reglas de InvoiceInput) más su `idempotency_key`. Sin `contingency` (la 03 va sola). Cada factura puede elegir su numeración con `numbering`; si no sirve, esa factura queda `failed` sin numerarse.
   class InvoiceBatchInvoiceInput < ApiModelBase
     # La Idempotency-Key de ESTA factura (la misma que usarías en POST /v1/invoices): única en el lote y distinta de la del lote.
     attr_accessor :idempotency_key
@@ -58,6 +58,10 @@ module TrevolGenerado
 
     attr_accessor :interoperability
 
+    attr_accessor :numbering
+
+    attr_accessor :pdf_design_id
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -80,7 +84,9 @@ module TrevolGenerado
         :'delivery_terms' => :'delivery_terms',
         :'shipment' => :'shipment',
         :'due_diligence' => :'due_diligence',
-        :'interoperability' => :'interoperability'
+        :'interoperability' => :'interoperability',
+        :'numbering' => :'numbering',
+        :'pdf_design_id' => :'pdf_design_id'
       }
     end
 
@@ -116,7 +122,9 @@ module TrevolGenerado
         :'delivery_terms' => :'DeliveryTerms',
         :'shipment' => :'Shipment',
         :'due_diligence' => :'String',
-        :'interoperability' => :'Interoperability'
+        :'interoperability' => :'Interoperability',
+        :'numbering' => :'Numbering',
+        :'pdf_design_id' => :'String'
       }
     end
 
@@ -124,6 +132,7 @@ module TrevolGenerado
     def self.openapi_nullable
       Set.new([
         :'rounding',
+        :'pdf_design_id'
       ])
     end
 
@@ -246,6 +255,14 @@ module TrevolGenerado
       if attributes.key?(:'interoperability')
         self.interoperability = attributes[:'interoperability']
       end
+
+      if attributes.key?(:'numbering')
+        self.numbering = attributes[:'numbering']
+      end
+
+      if attributes.key?(:'pdf_design_id')
+        self.pdf_design_id = attributes[:'pdf_design_id']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -317,7 +334,9 @@ module TrevolGenerado
           delivery_terms == o.delivery_terms &&
           shipment == o.shipment &&
           due_diligence == o.due_diligence &&
-          interoperability == o.interoperability
+          interoperability == o.interoperability &&
+          numbering == o.numbering &&
+          pdf_design_id == o.pdf_design_id
     end
 
     # @see the `==` method
@@ -329,7 +348,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [idempotency_key, external_id, customer, items, payment, notes, period, references, allowance_charges, prepayments, withholdings, rounding, document_type, operation_type, currency, cop_totals, delivery_terms, shipment, due_diligence, interoperability].hash
+      [idempotency_key, external_id, customer, items, payment, notes, period, references, allowance_charges, prepayments, withholdings, rounding, document_type, operation_type, currency, cop_totals, delivery_terms, shipment, due_diligence, interoperability, numbering, pdf_design_id].hash
     end
 
     # Builds the object from hash
