@@ -14,7 +14,7 @@ require 'date'
 require 'time'
 
 module TrevolGenerado
-  # El saldo prepago de Trevol. Es de la **cuenta**, no de la empresa: todas las empresas de la cuenta lo comparten (`shared: true`) y cualquier llave de cualquiera de ellas, de lectura o de escritura, `test` o `live`, ve el mismo. Solo lo que se emite en producción (llaves `live`) lo consume; la habilitación (`test`) no cobra. `available` es lo que se puede gastar (en pesos); `held`, lo apartado por documentos que la DIAN todavía valida y por operaciones de la API en curso; `overdraft`, cuánto puede bajar `available` de cero al apartar un documento; `low_threshold`, el umbral del aviso de saldo bajo (el 20 % de la última recarga; `null` sin recargas). `level`: `empty` con `available` ≤ 0, `low` por debajo de `low_threshold`, si no `ok`. Con `available` por debajo del precio de un documento, emitir en producción responde 402 `insufficient_balance`. El evento `balance.low` avisa por webhook. `operation_prices`: el precio en pesos de cada operación que Trevol hace por la empresa en el portal de la DIAN y que se cobra del saldo (`dian_sync`: `POST /v1/dian_syncs`; `numbering_refresh`: `POST /v1/numbering_ranges/refresh`; `numbering_association`: `POST /v1/numbering_ranges/{id}/associate`; `numbering_request`: `POST /v1/numbering_requests`, una vez por solicitud). 0 es gratis. Solo en producción: se aparta al crearla, se cobra si termina bien y se devuelve si falla; sin saldo, 402 `insufficient_balance` y no se crea nada.
+  # El saldo prepago de Trevol. Es de la **cuenta**, no de la empresa: todas las empresas de la cuenta lo comparten (`shared: true`) y cualquier llave de cualquiera de ellas, de lectura o de escritura, `test` o `live`, ve el mismo. Solo lo que se emite en producción (llaves `live`) lo consume; la habilitación (`test`) no cobra. `available` es lo que se puede gastar (en pesos); `held`, lo apartado por documentos que la DIAN todavía valida y por operaciones de la API en curso; `overdraft`, cuánto puede bajar `available` de cero al apartar un documento; `low_threshold`, el umbral del aviso de saldo bajo (el 20 % de la última recarga; `null` sin recargas). `level`: `empty` con `available` ≤ 0, `low` por debajo de `low_threshold`, si no `ok`. Con `available` por debajo del precio de un documento, emitir en producción responde 402 `insufficient_balance`. El evento `balance.low` avisa por webhook. `operation_prices`: el precio en pesos de cada operación que Trevol hace por la empresa en el portal de la DIAN y que se cobra del saldo (`dian_sync`: `POST /v1/dian_syncs`; `numbering_refresh`: `POST /v1/numbering_ranges/refresh`; `numbering_association`: `POST /v1/numbering_ranges/{id}/associate`; `numbering_request`: `POST /v1/numbering_requests`, una vez por solicitud). 0 es gratis. Solo en producción: se aparta al crearla, se cobra si termina bien y se devuelve si falla; sin saldo, 402 `insufficient_balance` y no se crea nada. Si la persona responsable de la llave no puede ver el saldo de la cuenta (en una cuenta compartida, un Facturador: en la app solo ve si alcanza), 403 `permission_denied` con `reason: key_owner_without_access`, y el 402 llega sin `balance_cop`.
   class Balance < ApiModelBase
     # Valores conocidos: `balance`.
     attr_accessor :object
@@ -43,6 +43,9 @@ module TrevolGenerado
     # Siempre true: el saldo es de la cuenta y lo comparten todas sus empresas.
     attr_accessor :shared
 
+    # Cuando la llave paga primero con el saldo propio de su persona responsable (lo activa esa persona en la app): el nivel de ese saldo propio, sin montos (quien tiene la llave no ve cuánto tiene esa persona). null si la llave paga con el saldo de la cuenta. Los demás campos siguen siendo los de la cuenta.
+    attr_accessor :key_owner
+
     # El precio en pesos de cada operación que Trevol hace por la empresa en el portal de la DIAN y que se cobra del saldo (0 es gratis). Solo en producción.
     attr_accessor :operation_prices
 
@@ -58,6 +61,7 @@ module TrevolGenerado
         :'level' => :'level',
         :'updated_at' => :'updated_at',
         :'shared' => :'shared',
+        :'key_owner' => :'key_owner',
         :'operation_prices' => :'operation_prices'
       }
     end
@@ -84,6 +88,7 @@ module TrevolGenerado
         :'level' => :'String',
         :'updated_at' => :'Time',
         :'shared' => :'Boolean',
+        :'key_owner' => :'BalanceKeyOwner',
         :'operation_prices' => :'BalanceOperationPrices'
       }
     end
@@ -93,6 +98,7 @@ module TrevolGenerado
       Set.new([
         :'low_threshold',
         :'updated_at',
+        :'key_owner',
       ])
     end
 
@@ -158,6 +164,10 @@ module TrevolGenerado
         self.shared = attributes[:'shared']
       end
 
+      if attributes.key?(:'key_owner')
+        self.key_owner = attributes[:'key_owner']
+      end
+
       if attributes.key?(:'operation_prices')
         self.operation_prices = attributes[:'operation_prices']
       end
@@ -192,6 +202,7 @@ module TrevolGenerado
           level == o.level &&
           updated_at == o.updated_at &&
           shared == o.shared &&
+          key_owner == o.key_owner &&
           operation_prices == o.operation_prices
     end
 
@@ -204,7 +215,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [object, currency, available, held, overdraft, low_threshold, level, updated_at, shared, operation_prices].hash
+      [object, currency, available, held, overdraft, low_threshold, level, updated_at, shared, key_owner, operation_prices].hash
     end
 
     # Builds the object from hash
