@@ -14,7 +14,7 @@ require 'date'
 require 'time'
 
 module TrevolGenerado
-  # Cuando la llave paga primero con el saldo propio de su persona responsable (lo activa esa persona en la app): el nivel de ese saldo propio, sin montos (quien tiene la llave no ve cuánto tiene esa persona). null si la llave paga con el saldo de la cuenta. Los demás campos siguen siendo los de la cuenta.
+  # Cuando la llave paga primero con el saldo propio de su persona responsable (así nace cada llave; esa persona lo puede apagar en la app): el nivel de ese saldo propio, sin montos (quien tiene la llave no ve cuánto tiene esa persona). null si la llave paga con el saldo de la cuenta (por ejemplo, la del titular, o si su persona responsable no tiene saldo propio). Los demás campos siguen siendo los de la cuenta.
   class BalanceKeyOwner < ApiModelBase
     # ok, low (por debajo de su umbral de aviso) o empty (en cero o menos). Valores conocidos: `ok`, `low`, `empty`.
     attr_accessor :level
