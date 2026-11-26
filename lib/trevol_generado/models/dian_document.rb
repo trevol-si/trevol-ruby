@@ -14,7 +14,7 @@ require 'date'
 require 'time'
 
 module TrevolGenerado
-  # Un documento de la empresa ante la DIAN (emitido con Trevol o con otro sistema, o recibido de un proveedor), tal como lo trajo la sincronización o el buzón. Es de solo lectura: no tiene PDF ni acciones aquí; su XML se le pide a la DIAN (`xml_available`).
+  # Un documento de la empresa ante la DIAN (emitido con Trevol o con otro sistema, o recibido de un proveedor), tal como lo trajo la sincronización o el buzón. Es de solo lectura: su XML se le pide a la DIAN (`xml_available`) y también el PDF oficial que genera la DIAN (`pdf_available`, `pdf_status`).
   class DianDocument < ApiModelBase
     # Úsalo en `starting_after` para pedir la página siguiente.
     attr_accessor :id
@@ -66,6 +66,12 @@ module TrevolGenerado
     # Si se le puede pedir el XML a la DIAN con GET /v1/dian_documents/{id}/xml (tiene CUFE y la DIAN lo verificó; Trevol no lo guarda). En lo emitido, además, si la llave tiene el permiso customers:read (su XML trae los datos personales del cliente).
     attr_accessor :xml_available
 
+    # Si se le puede pedir a la DIAN el PDF oficial del documento con POST /v1/dian_documents/{id}/pdf: solo en producción, con CUFE y verificado por la DIAN. En lo emitido, además, si la llave tiene el permiso customers:read.
+    attr_accessor :pdf_available
+
+    # Cómo va el PDF de la DIAN: `not_requested` (nunca se pidió, o el que se pidió venció a los 90 días), `pending` (Trevol lo está pidiendo a la DIAN), `ready` (se baja con GET /v1/dian_documents/{id}/pdf) o `failed` (la DIAN no lo entregó; no se cobró: se puede pedir otra vez).
+    attr_accessor :pdf_status
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -86,7 +92,9 @@ module TrevolGenerado
         :'direction' => :'direction',
         :'received_on' => :'received_on',
         :'source' => :'source',
-        :'xml_available' => :'xml_available'
+        :'xml_available' => :'xml_available',
+        :'pdf_available' => :'pdf_available',
+        :'pdf_status' => :'pdf_status'
       }
     end
 
@@ -120,7 +128,9 @@ module TrevolGenerado
         :'direction' => :'String',
         :'received_on' => :'Date',
         :'source' => :'String',
-        :'xml_available' => :'Boolean'
+        :'xml_available' => :'Boolean',
+        :'pdf_available' => :'Boolean',
+        :'pdf_status' => :'String'
       }
     end
 
@@ -236,6 +246,14 @@ module TrevolGenerado
       if attributes.key?(:'xml_available')
         self.xml_available = attributes[:'xml_available']
       end
+
+      if attributes.key?(:'pdf_available')
+        self.pdf_available = attributes[:'pdf_available']
+      end
+
+      if attributes.key?(:'pdf_status')
+        self.pdf_status = attributes[:'pdf_status']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -275,7 +293,9 @@ module TrevolGenerado
           direction == o.direction &&
           received_on == o.received_on &&
           source == o.source &&
-          xml_available == o.xml_available
+          xml_available == o.xml_available &&
+          pdf_available == o.pdf_available &&
+          pdf_status == o.pdf_status
     end
 
     # @see the `==` method
@@ -287,7 +307,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, object, environment, type, dian_type, number, prefix, cufe, issued_on, counterpart, currency, total, tax_total, dian_status, direction, received_on, source, xml_available].hash
+      [id, object, environment, type, dian_type, number, prefix, cufe, issued_on, counterpart, currency, total, tax_total, dian_status, direction, received_on, source, xml_available, pdf_available, pdf_status].hash
     end
 
     # Builds the object from hash

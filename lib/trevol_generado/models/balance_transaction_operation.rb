@@ -16,10 +16,10 @@ require 'time'
 module TrevolGenerado
   # Solo en `type: operation`: la operación de la API que se cobró y el id de lo que creó.
   class BalanceTransactionOperation < ApiModelBase
-    # Valores conocidos: `dian_sync`, `numbering_refresh`, `numbering_association`, `numbering_request`.
+    # Valores conocidos: `dian_sync`, `numbering_refresh`, `numbering_association`, `numbering_request`, `dian_document_pdf`.
     attr_accessor :type
 
-    # dsync_… (sincronización), nas_… (asociación) o nreq_… (solicitud); null en una lectura de numeraciones.
+    # dsync_… (sincronización), nas_… (asociación), nreq_… (solicitud) o ddoc_… (el documento del PDF de la DIAN); null en una lectura de numeraciones.
     attr_accessor :id
 
     # Attribute mapping from ruby-style variable name to JSON key.

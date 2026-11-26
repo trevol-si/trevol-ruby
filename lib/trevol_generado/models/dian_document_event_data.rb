@@ -57,6 +57,9 @@ module TrevolGenerado
     # Si se le puede pedir el XML a la DIAN con GET /v1/dian_documents/{id}/xml (tiene CUFE y la DIAN lo verificó).
     attr_accessor :xml_available
 
+    # Si se le puede pedir el PDF oficial de la DIAN con POST /v1/dian_documents/{id}/pdf (además, solo en producción).
+    attr_accessor :pdf_available
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -76,7 +79,8 @@ module TrevolGenerado
         :'tax_total' => :'tax_total',
         :'counterpart' => :'counterpart',
         :'source' => :'source',
-        :'xml_available' => :'xml_available'
+        :'xml_available' => :'xml_available',
+        :'pdf_available' => :'pdf_available'
       }
     end
 
@@ -109,7 +113,8 @@ module TrevolGenerado
         :'tax_total' => :'Float',
         :'counterpart' => :'EventDianCounterpart',
         :'source' => :'String',
-        :'xml_available' => :'Boolean'
+        :'xml_available' => :'Boolean',
+        :'pdf_available' => :'Boolean'
       }
     end
 
@@ -221,6 +226,10 @@ module TrevolGenerado
       if attributes.key?(:'xml_available')
         self.xml_available = attributes[:'xml_available']
       end
+
+      if attributes.key?(:'pdf_available')
+        self.pdf_available = attributes[:'pdf_available']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -259,7 +268,8 @@ module TrevolGenerado
           tax_total == o.tax_total &&
           counterpart == o.counterpart &&
           source == o.source &&
-          xml_available == o.xml_available
+          xml_available == o.xml_available &&
+          pdf_available == o.pdf_available
     end
 
     # @see the `==` method
@@ -271,7 +281,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [object, id, direction, environment, type, dian_type, number, prefix, cufe, issued_on, received_on, currency, total, tax_total, counterpart, source, xml_available].hash
+      [object, id, direction, environment, type, dian_type, number, prefix, cufe, issued_on, received_on, currency, total, tax_total, counterpart, source, xml_available, pdf_available].hash
     end
 
     # Builds the object from hash

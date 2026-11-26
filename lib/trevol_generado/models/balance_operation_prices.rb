@@ -14,7 +14,7 @@ require 'date'
 require 'time'
 
 module TrevolGenerado
-  # El precio en pesos de cada operación que Trevol hace por la empresa en el portal de la DIAN y que se cobra del saldo (0 es gratis). Solo en producción.
+  # El precio en pesos de cada operación de la API que Trevol hace por la empresa ante la DIAN y que se cobra del saldo (0 es gratis). Solo en producción.
   class BalanceOperationPrices < ApiModelBase
     attr_accessor :dian_sync
 
@@ -24,13 +24,16 @@ module TrevolGenerado
 
     attr_accessor :numbering_request
 
+    attr_accessor :dian_document_pdf
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
         :'dian_sync' => :'dian_sync',
         :'numbering_refresh' => :'numbering_refresh',
         :'numbering_association' => :'numbering_association',
-        :'numbering_request' => :'numbering_request'
+        :'numbering_request' => :'numbering_request',
+        :'dian_document_pdf' => :'dian_document_pdf'
       }
     end
 
@@ -50,7 +53,8 @@ module TrevolGenerado
         :'dian_sync' => :'Integer',
         :'numbering_refresh' => :'Integer',
         :'numbering_association' => :'Integer',
-        :'numbering_request' => :'Integer'
+        :'numbering_request' => :'Integer',
+        :'dian_document_pdf' => :'Integer'
       }
     end
 
@@ -101,6 +105,10 @@ module TrevolGenerado
       if attributes.key?(:'numbering_request')
         self.numbering_request = attributes[:'numbering_request']
       end
+
+      if attributes.key?(:'dian_document_pdf')
+        self.dian_document_pdf = attributes[:'dian_document_pdf']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -126,7 +134,8 @@ module TrevolGenerado
           dian_sync == o.dian_sync &&
           numbering_refresh == o.numbering_refresh &&
           numbering_association == o.numbering_association &&
-          numbering_request == o.numbering_request
+          numbering_request == o.numbering_request &&
+          dian_document_pdf == o.dian_document_pdf
     end
 
     # @see the `==` method
@@ -138,7 +147,7 @@ module TrevolGenerado
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [dian_sync, numbering_refresh, numbering_association, numbering_request].hash
+      [dian_sync, numbering_refresh, numbering_association, numbering_request, dian_document_pdf].hash
     end
 
     # Builds the object from hash

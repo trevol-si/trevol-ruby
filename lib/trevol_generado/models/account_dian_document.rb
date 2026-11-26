@@ -14,7 +14,7 @@ require 'date'
 require 'time'
 
 module TrevolGenerado
-  # Un documento de una empresa de tu cuenta ante la DIAN, emitido o recibido, tal como lo trajo la sincronización (el mismo `dian_document` de `GET /v1/dian_documents`, sin `xml_available`), con la empresa y, en las facturas, el resumen RADIAN. Lo que llegó al buzón y la sincronización todavía no vio no aparece.
+  # Un documento de una empresa de tu cuenta ante la DIAN, emitido o recibido, tal como lo trajo la sincronización (el mismo `dian_document` de `GET /v1/dian_documents`, sin `xml_available` ni el PDF), con la empresa y, en las facturas, el resumen RADIAN. Lo que llegó al buzón y la sincronización todavía no vio no aparece.
   class AccountDianDocument < ApiModelBase
     # Úsalo en `starting_after` para pedir la página siguiente.
     attr_accessor :id

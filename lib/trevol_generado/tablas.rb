@@ -4,7 +4,7 @@
 
 module TrevolGenerado
   module Tablas
-    VERSION = '0.5.0'
+    VERSION = '0.6.0'
     API_VERSION = '2026-11-18'
 
     # seguro: GET, preview, PATCH y todo POST/PUT con Idempotency-Key que no devuelva un secreto una sola vez. solo_429: el resto.
@@ -55,6 +55,7 @@ module TrevolGenerado
       { operation_id: 'downloadDebitNotePdf', metodo: 'GET', ruta: '/debit_notes/{id}/pdf', recurso: 'DebitNotes', idempotente: false, reintento: 'seguro', binario: 'pdf', llave: 'api_o_administracion' },
       { operation_id: 'downloadDebitNoteXml', metodo: 'GET', ruta: '/debit_notes/{id}/xml', recurso: 'DebitNotes', idempotente: false, reintento: 'seguro', binario: 'xml', llave: 'api_o_administracion' },
       { operation_id: 'downloadDebitNoteZip', metodo: 'GET', ruta: '/debit_notes/{id}/zip', recurso: 'DebitNotes', idempotente: false, reintento: 'seguro', binario: 'zip', llave: 'api_o_administracion' },
+      { operation_id: 'downloadDianDocumentPdf', metodo: 'GET', ruta: '/dian_documents/{id}/pdf', recurso: 'DianDocuments', idempotente: false, reintento: 'seguro', binario: 'pdf', llave: 'api_o_administracion' },
       { operation_id: 'downloadDianDocumentXml', metodo: 'GET', ruta: '/dian_documents/{id}/xml', recurso: 'DianDocuments', idempotente: false, reintento: 'seguro', binario: 'xml', llave: 'api_o_administracion' },
       { operation_id: 'downloadEquivalentDocumentAdjustmentDianResponse', metodo: 'GET', ruta: '/equivalent_document_adjustments/{id}/dian_response', recurso: 'EquivalentDocumentAdjustments', idempotente: false, reintento: 'seguro', binario: 'xml', llave: 'api_o_administracion' },
       { operation_id: 'downloadEquivalentDocumentAdjustmentPdf', metodo: 'GET', ruta: '/equivalent_document_adjustments/{id}/pdf', recurso: 'EquivalentDocumentAdjustments', idempotente: false, reintento: 'seguro', binario: 'pdf', llave: 'api_o_administracion' },
@@ -128,6 +129,7 @@ module TrevolGenerado
       { operation_id: 'previewSupportDocument', metodo: 'POST', ruta: '/support_documents/preview', recurso: 'SupportDocuments', idempotente: false, reintento: 'seguro', binario: nil, llave: 'api_o_administracion' },
       { operation_id: 'previewSupportDocumentAdjustment', metodo: 'POST', ruta: '/support_document_adjustments/preview', recurso: 'SupportDocumentAdjustments', idempotente: false, reintento: 'seguro', binario: nil, llave: 'api_o_administracion' },
       { operation_id: 'refreshNumberingRanges', metodo: 'POST', ruta: '/numbering_ranges/refresh', recurso: 'NumberingRanges', idempotente: false, reintento: 'solo_429', binario: nil, llave: 'api_o_administracion' },
+      { operation_id: 'requestDianDocumentPdf', metodo: 'POST', ruta: '/dian_documents/{id}/pdf', recurso: 'DianDocuments', idempotente: false, reintento: 'solo_429', binario: nil, llave: 'api_o_administracion' },
       { operation_id: 'resendEvent', metodo: 'POST', ruta: '/events/{id}/resend', recurso: 'Events', idempotente: false, reintento: 'solo_429', binario: nil, llave: 'api_o_administracion' },
       { operation_id: 'retrieveAccount', metodo: 'GET', ruta: '/account', recurso: 'Account', idempotente: false, reintento: 'seguro', binario: nil, llave: 'administracion' },
       { operation_id: 'retrieveAccountCompany', metodo: 'GET', ruta: '/account/companies/{id}', recurso: 'Account', idempotente: false, reintento: 'seguro', binario: nil, llave: 'administracion' },

@@ -19,6 +19,69 @@ module TrevolGenerado
     def initialize(api_client = ApiClient.default)
       @api_client = api_client
     end
+    # Bajar el PDF de la DIAN de un documento
+    # El PDF oficial de la DIAN de un documento, cuando está listo (200 `application/pdf`). Bajarlo no se cobra. Si todavía viene en camino: 409 `file_unavailable` reintentable con `reason: pending` y `Retry-After` (o mira `pdf_status`). Si no se ha pedido (o venció a los 90 días): 409 `file_unavailable` con `reason: not_requested`; pídelo con POST /v1/dian_documents/{id}/pdf. Si la DIAN no lo entregó: 503 `dian_unavailable` (pídelo otra vez) o 409 `file_unavailable` con `reason: dian_failed` (la DIAN no tiene el PDF de ese documento); en los dos casos no se cobró. Solo producción; lo emitido exige `customers:read`.
+    # @param id [String] 
+    # @param [Hash] opts the optional parameters
+    # @return [File]
+    def download_dian_document_pdf(id, opts = {})
+      data, _status_code, _headers = download_dian_document_pdf_with_http_info(id, opts)
+      data
+    end
+
+    # Bajar el PDF de la DIAN de un documento
+    # El PDF oficial de la DIAN de un documento, cuando está listo (200 &#x60;application/pdf&#x60;). Bajarlo no se cobra. Si todavía viene en camino: 409 &#x60;file_unavailable&#x60; reintentable con &#x60;reason: pending&#x60; y &#x60;Retry-After&#x60; (o mira &#x60;pdf_status&#x60;). Si no se ha pedido (o venció a los 90 días): 409 &#x60;file_unavailable&#x60; con &#x60;reason: not_requested&#x60;; pídelo con POST /v1/dian_documents/{id}/pdf. Si la DIAN no lo entregó: 503 &#x60;dian_unavailable&#x60; (pídelo otra vez) o 409 &#x60;file_unavailable&#x60; con &#x60;reason: dian_failed&#x60; (la DIAN no tiene el PDF de ese documento); en los dos casos no se cobró. Solo producción; lo emitido exige &#x60;customers:read&#x60;.
+    # @param id [String] 
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(File, Integer, Hash)>] File data, response status code and response headers
+    def download_dian_document_pdf_with_http_info(id, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: DianDocumentsApi.download_dian_document_pdf ...'
+      end
+      # verify the required parameter 'id' is set
+      if @api_client.config.client_side_validation && id.nil?
+        fail ArgumentError, "Missing the required parameter 'id' when calling DianDocumentsApi.download_dian_document_pdf"
+      end
+      # resource path
+      local_var_path = '/dian_documents/{id}/pdf'.sub('{id}', CGI.escape(id.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/pdf', 'application/problem+json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'File'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['llave']
+
+      new_options = opts.merge(
+        :operation => :"DianDocumentsApi.download_dian_document_pdf",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: DianDocumentsApi#download_dian_document_pdf\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
     # El XML de un documento (pedido a la DIAN)
     # El XML de un documento de la empresa de la llave, emitido o recibido, pedido a la DIAN en el momento por su CUFE (Trevol no guarda el XML de lo que emitió otro sistema ni de lo recibido). Antes de entregarlo, Trevol comprueba que es el del documento pedido; no lo modifica. `xml_available` dice si se puede pedir. El XML de lo EMITIDO trae al cliente completo (documento, correo, teléfono y dirección): pedirlo exige el permiso `customers:read` de la llave (403 `permission_denied` con `required_permission: customers:read`); el de lo recibido, no. Límites propios: 60 por minuto por llave y 120 por minuto por empresa y ambiente, entre todas sus llaves (429 con `limit: dian_document_xml`). Errores: 404 si el documento es de otra empresa o de otro ambiente; 409 `file_unavailable` si la DIAN no lo tiene (o `reason: too_large` si pasa de 4 MB: descárgalo del portal de la DIAN); 422 `certificate_problem` si el certificado de la empresa falta o la DIAN no lo acepta; 502 `dian_unavailable` (reintentable, con `Retry-After`) si la DIAN devolvió un XML que no es el del documento (no se entrega); 503 `dian_unavailable` (reintentable, con `Retry-After`) si la DIAN no responde. No se cobra. Lo que se emitió con Trevol tiene además su XML firmado en su recurso (`/invoices/{id}/xml`…).
     # @param id [String] 
@@ -230,6 +293,69 @@ module TrevolGenerado
       data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
       if @api_client.config.debugging
         @api_client.config.logger.debug "API called: DianDocumentsApi#list_dian_documents\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Pedir el PDF de la DIAN de un documento
+    # Pide el PDF oficial que genera la DIAN de un documento de la empresa de la llave (emitido o recibido): la representación gráfica de la DIAN, la misma que ofrece su portal. Trevol lo pide a la DIAN y puede tardar unos segundos o minutos: responde 202 con el objeto `dian_document_pdf` (`status: pending`), `Location` y `Retry-After`; cuando está listo, bájalo con GET /v1/dian_documents/{id}/pdf (o mira `pdf_status` en el documento). Si ya hay uno en camino o listo, lo devuelve sin pedir otro ni cobrar (200 si ya está listo): repetir la petición es seguro y no necesita `Idempotency-Key`. Se cobra del saldo cuando llega (`dian_document_pdf` en `operation_prices` de GET /v1/balance); si la DIAN no lo entrega, no se cobra. Se guarda 90 días: bajarlo otra vez no se cobra; después vence y pedirlo es un pedido nuevo. Solo producción (con una llave de prueba, 403 `live_mode_required`) y con una llave de escritura. Lo emitido trae los datos personales del cliente: exige el permiso `customers:read` de la llave. Errores: 404 (otra empresa u otro ambiente), 409 `file_unavailable` (sin CUFE: mira `pdf_available`), 402 `insufficient_balance` (no se pidió nada) y 429 con `limit: dian_document_pdf`.
+    # @param id [String] 
+    # @param [Hash] opts the optional parameters
+    # @return [DianDocumentPdf]
+    def request_dian_document_pdf(id, opts = {})
+      data, _status_code, _headers = request_dian_document_pdf_with_http_info(id, opts)
+      data
+    end
+
+    # Pedir el PDF de la DIAN de un documento
+    # Pide el PDF oficial que genera la DIAN de un documento de la empresa de la llave (emitido o recibido): la representación gráfica de la DIAN, la misma que ofrece su portal. Trevol lo pide a la DIAN y puede tardar unos segundos o minutos: responde 202 con el objeto &#x60;dian_document_pdf&#x60; (&#x60;status: pending&#x60;), &#x60;Location&#x60; y &#x60;Retry-After&#x60;; cuando está listo, bájalo con GET /v1/dian_documents/{id}/pdf (o mira &#x60;pdf_status&#x60; en el documento). Si ya hay uno en camino o listo, lo devuelve sin pedir otro ni cobrar (200 si ya está listo): repetir la petición es seguro y no necesita &#x60;Idempotency-Key&#x60;. Se cobra del saldo cuando llega (&#x60;dian_document_pdf&#x60; en &#x60;operation_prices&#x60; de GET /v1/balance); si la DIAN no lo entrega, no se cobra. Se guarda 90 días: bajarlo otra vez no se cobra; después vence y pedirlo es un pedido nuevo. Solo producción (con una llave de prueba, 403 &#x60;live_mode_required&#x60;) y con una llave de escritura. Lo emitido trae los datos personales del cliente: exige el permiso &#x60;customers:read&#x60; de la llave. Errores: 404 (otra empresa u otro ambiente), 409 &#x60;file_unavailable&#x60; (sin CUFE: mira &#x60;pdf_available&#x60;), 402 &#x60;insufficient_balance&#x60; (no se pidió nada) y 429 con &#x60;limit: dian_document_pdf&#x60;.
+    # @param id [String] 
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(DianDocumentPdf, Integer, Hash)>] DianDocumentPdf data, response status code and response headers
+    def request_dian_document_pdf_with_http_info(id, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: DianDocumentsApi.request_dian_document_pdf ...'
+      end
+      # verify the required parameter 'id' is set
+      if @api_client.config.client_side_validation && id.nil?
+        fail ArgumentError, "Missing the required parameter 'id' when calling DianDocumentsApi.request_dian_document_pdf"
+      end
+      # resource path
+      local_var_path = '/dian_documents/{id}/pdf'.sub('{id}', CGI.escape(id.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json', 'application/problem+json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'DianDocumentPdf'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['llave']
+
+      new_options = opts.merge(
+        :operation => :"DianDocumentsApi.request_dian_document_pdf",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:POST, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: DianDocumentsApi#request_dian_document_pdf\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
       end
       return data, status_code, headers
     end
