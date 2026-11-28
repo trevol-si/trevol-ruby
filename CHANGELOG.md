@@ -3,7 +3,7 @@
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el versionado, [SemVer](https://semver.org/lang/es/): antes
 de la 1.0, un cambio incompatible sube el número menor.
 
-## [0.7.0] — sin publicar
+## [0.7.0] — 2026-11-28
 
 Regenerado con la versión **`2026-11-28`** de la API (las mismas 180 operaciones y 70 tipos de evento). Sube el número menor porque
 cambia la versión que el SDK fija en `Trevol-Version` (`API_VERSION`): `2026-11-28` en lugar de `2026-11-18`.
