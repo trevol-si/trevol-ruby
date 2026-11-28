@@ -4,8 +4,8 @@
 
 module TrevolGenerado
   module Tablas
-    VERSION = '0.6.0'
-    API_VERSION = '2026-11-18'
+    VERSION = '0.7.0'
+    API_VERSION = '2026-11-28'
 
     # seguro: GET, preview, PATCH y todo POST/PUT con Idempotency-Key que no devuelva un secreto una sola vez. solo_429: el resto.
     # llave: api_o_administracion (tvl_, o tva_ con Trevol-Company y Trevol-Environment), administracion (solo tva_) o ninguna.

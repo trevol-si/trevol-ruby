@@ -3,6 +3,22 @@
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el versionado, [SemVer](https://semver.org/lang/es/): antes
 de la 1.0, un cambio incompatible sube el número menor.
 
+## [0.7.0] — sin publicar
+
+Regenerado con la versión **`2026-11-28`** de la API (las mismas 180 operaciones y 70 tipos de evento). Sube el número menor porque
+cambia la versión que el SDK fija en `Trevol-Version` (`API_VERSION`): `2026-11-28` en lugar de `2026-11-18`.
+
+- En la `2026-11-28`, una nota crédito o débito **sin `payment`** sobre una factura de Trevol (`invoice.id`) toma el pago de esa
+  factura: su forma y su primer medio y, a crédito, su fecha de vencimiento si todavía no ha pasado (si ya pasó, el mismo plazo en
+  días, contado desde la fecha de la nota). Antes iba de contado con el medio 1. Vale al crear, en la vista previa y al corregir. Una
+  `payment` que mandes sigue mandando.
+- Lo demás es igual que en la `2026-11-18` (los errores juntos y el `202 processing`).
+- `NoteInput` documenta lo que pasa sin `payment`, y `Trevol-Version` admite `2026-11-28`. Solo cambian textos de la
+  documentación del código y la constante de la versión.
+
+Para seguir con el comportamiento de la 0.6.0, crea el cliente con la versión anterior: `Trevol::Client.new(llave, api_version: '2026-11-18')`. Más en
+<https://platform.trevol.si/docs/versiones#2026-11-28>.
+
 ## [0.6.0] — 2026-11-25
 
 Regenerado con el PDF de la DIAN (la misma versión `2026-11-18` de la API; 180 operaciones y 70 tipos de evento). Todo es aditivo: el

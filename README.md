@@ -10,7 +10,7 @@ RADIAN ante la DIAN (Colombia). Documentación: <https://platform.trevol.si/docs
 > verification, cursor pagination with `Enumerator::Lazy` and PDF/XML/ZIP downloads. Account keys (`tva_test_`/`tva_live_`) manage the
 > account through `account` and reach each company with `company:` or `with_company`. Docs are in Spanish like the API.
 
-**Versión 0.6.0** — API `2026-11-18`. Licencia MIT.
+**Versión 0.7.0** — API `2026-11-28`. Licencia MIT.
 
 ## Instalación
 
@@ -118,10 +118,11 @@ Hasta 2 reintentos (3 intentos) con espera creciente (0,5 s, 1 s, 2 s… con top
 
 ### La versión de la API
 
-El SDK fija `Trevol-Version: 2026-11-18` en cada petición. **Ojo:** una llave de una versión anterior que empiece a usar este SDK
-pasa a `2026-11-18` (el encabezado manda): un `422 validation_error` trae todos los problemas de los datos juntos en `errors`, no solo el
+El SDK fija `Trevol-Version: 2026-11-28` en cada petición. **Ojo:** una llave de una versión anterior que empiece a usar este SDK
+pasa a `2026-11-28` (el encabezado manda): una nota crédito o débito sin `payment` sobre una factura de Trevol toma el pago de
+esa factura (antes, contado); un `422 validation_error` trae todos los problemas de los datos juntos en `errors`, no solo el
 primero, y si la llave estaba en `2026-10-21`, recibe `202 processing` donde antes recibía `503`. Si todavía no quieres ese cambio, fija
-la versión que usabas: `Trevol::Client.new(llave, api_version: '2026-10-22')`. Más en <https://platform.trevol.si/docs/versiones>.
+la versión que usabas: `Trevol::Client.new(llave, api_version: '2026-11-18')`. Más en <https://platform.trevol.si/docs/versiones>.
 
 ### Errores tipados
 
@@ -169,7 +170,7 @@ Cada método acepta `header_params: { 'X-Mi-Cabecera' => '…' }` (se mezcla con
 ```ruby
 Trevol::Client.new(
   llave,
-  api_version: '2026-11-18',   # Trevol-Version en cada petición
+  api_version: '2026-11-28',   # Trevol-Version en cada petición
   max_retries: 2,              # 0 los apaga
   timeout: 65,                 # segundos por intento
   max_retry_after: 60,         # segundos

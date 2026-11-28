@@ -2,8 +2,8 @@
  "openapi": "3.1.0",
  "info": {
   "title": "API de Trevol",
-  "version": "2026-11-18",
-  "description": "Facturación electrónica de Colombia (DIAN). Con una llave se emiten las facturas de venta (incluida la exportación, la moneda extranjera, el AIU, los mandatos, el transporte, los notarios, las divisas y el sector salud) y sus notas crédito y débito; el documento soporte y su nota de ajuste; el documento equivalente electrónico (tiquete POS y los otros nueve tipos) y su nota de ajuste; la nómina electrónica (102) y su nota de ajuste (103); y los eventos RADIAN 030 a 034. Cada llave es de una empresa y un ambiente: tvl_test_ (habilitación real de la DIAN) o tvl_live_ (producción). Mensajes en español, campos en inglés. Versiones: la `2026-11-18` (la de las llaves nuevas) hereda todo lo de la 2026-10-22 y además devuelve juntos, en `errors`, todos los problemas de los datos de cualquier documento (hasta 100); la `2026-10-22` responde 202 `processing` cuando la DIAN no contesta y Trevol termina el documento (no crees otro para la misma operación) y trae solo el primer problema de los datos; la `2026-10-21` (las llaves de antes de la fase 2) responde además 503 `dian_unavailable`. El encabezado `Trevol-Version` manda sobre la versión de la llave. La fase 3 es aditiva: no hay versión nueva. En habilitación, el set de pruebas de la nómina, del documento equivalente y de los eventos responde 202 `validating` en las dos versiones. El PDF, el ZIP y el correo se hacen después del 201 en los documentos que los llevan: espera el evento `….delivered` o consulta `delivery.status`. Avisos firmados con Standard Webhooks (sección `webhooks`; el catálogo tiene 69 tipos y un endpoint con `*` sigue recibiendo solo los tipos del catálogo con que se guardó —los 22 de la fase 2, los 49 de la fase 3 o los 60 del catálogo 3— hasta que se guarde de nuevo su lista de eventos). Lo que la empresa emitió y recibió según la DIAN está en `/v1/dian_documents`, y la sincronización con la DIAN se ordena con `POST /v1/dian_syncs`. El saldo prepago de la cuenta (lo comparten sus empresas) se consulta en `/v1/balance` y se recarga con Wompi (`POST /v1/balance/top_ups`). Quien lleva varias empresas en una cuenta usa una llave de administración (`tva_test_…` o `tva_live_…`): en `/v1/account` ve sus empresas, reserva empresas nuevas, crea y revoca sus llaves y consulta lo de todas; en las rutas de cada empresa emite y lee como una llave de esa empresa, con `Trevol-Company` y `Trevol-Environment` en cada petición. Para probar sin la DIAN, la empresa SIMULADA de la cuenta (se crea en la consola): sus llaves son `tvl_test_…` normales; sus documentos se validan, se calculan y se firman como siempre pero nunca van a la DIAN ni tienen validez, y todo lo suyo lleva `simulated: true` y la cabecera `Trevol-Simulated: true`. Documentación: https://platform.trevol.si/docs"
+  "version": "2026-11-28",
+  "description": "Facturación electrónica de Colombia (DIAN). Con una llave se emiten las facturas de venta (incluida la exportación, la moneda extranjera, el AIU, los mandatos, el transporte, los notarios, las divisas y el sector salud) y sus notas crédito y débito; el documento soporte y su nota de ajuste; el documento equivalente electrónico (tiquete POS y los otros nueve tipos) y su nota de ajuste; la nómina electrónica (102) y su nota de ajuste (103); y los eventos RADIAN 030 a 034. Cada llave es de una empresa y un ambiente: tvl_test_ (habilitación real de la DIAN) o tvl_live_ (producción). Mensajes en español, campos en inglés. Versiones: la `2026-11-28` hereda todo lo de la 2026-11-18 y además una nota crédito o débito sin `payment` sobre una factura de Trevol toma el pago de esa factura (antes: contado); la `2026-11-18` (la de las llaves nuevas) hereda todo lo de la 2026-10-22 y además devuelve juntos, en `errors`, todos los problemas de los datos de cualquier documento (hasta 100); la `2026-10-22` responde 202 `processing` cuando la DIAN no contesta y Trevol termina el documento (no crees otro para la misma operación) y trae solo el primer problema de los datos; la `2026-10-21` (las llaves de antes de la fase 2) responde además 503 `dian_unavailable`. El encabezado `Trevol-Version` manda sobre la versión de la llave. La fase 3 es aditiva: no hay versión nueva. En habilitación, el set de pruebas de la nómina, del documento equivalente y de los eventos responde 202 `validating` en las dos versiones. El PDF, el ZIP y el correo se hacen después del 201 en los documentos que los llevan: espera el evento `….delivered` o consulta `delivery.status`. Avisos firmados con Standard Webhooks (sección `webhooks`; el catálogo tiene 69 tipos y un endpoint con `*` sigue recibiendo solo los tipos del catálogo con que se guardó —los 22 de la fase 2, los 49 de la fase 3 o los 60 del catálogo 3— hasta que se guarde de nuevo su lista de eventos). Lo que la empresa emitió y recibió según la DIAN está en `/v1/dian_documents`, y la sincronización con la DIAN se ordena con `POST /v1/dian_syncs`. El saldo prepago de la cuenta (lo comparten sus empresas) se consulta en `/v1/balance` y se recarga con Wompi (`POST /v1/balance/top_ups`). Quien lleva varias empresas en una cuenta usa una llave de administración (`tva_test_…` o `tva_live_…`): en `/v1/account` ve sus empresas, reserva empresas nuevas, crea y revoca sus llaves y consulta lo de todas; en las rutas de cada empresa emite y lee como una llave de esa empresa, con `Trevol-Company` y `Trevol-Environment` en cada petición. Para probar sin la DIAN, la empresa SIMULADA de la cuenta (se crea en la consola): sus llaves son `tvl_test_…` normales; sus documentos se validan, se calculan y se firman como siempre pero nunca van a la DIAN ni tienen validez, y todo lo suyo lleva `simulated: true` y la cabecera `Trevol-Simulated: true`. Documentación: https://platform.trevol.si/docs"
  },
  "servers": [
   {
@@ -5092,13 +5092,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -6052,13 +6053,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -6385,13 +6387,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -6574,13 +6577,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -7412,13 +7416,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -8145,13 +8150,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -8373,13 +8379,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -8562,13 +8569,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -9400,13 +9408,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -10119,13 +10128,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -10340,13 +10350,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -10529,13 +10540,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -11367,13 +11379,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -12301,13 +12314,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -12621,13 +12635,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -13083,13 +13098,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -13806,13 +13822,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -14028,13 +14045,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -14411,13 +14429,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -15616,13 +15635,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -16021,13 +16041,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -16361,13 +16382,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -17290,13 +17312,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -18196,13 +18219,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -18469,13 +18493,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -18701,13 +18726,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -19630,13 +19656,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -20859,13 +20886,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -21265,13 +21293,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -21981,13 +22010,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -23030,13 +23060,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -23361,13 +23392,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -23985,13 +24017,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -24931,13 +24964,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -30000,13 +30034,14 @@
       "name": "Trevol-Version",
       "in": "header",
       "required": false,
-      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18).",
+      "description": "La versión de la API. Si no viene, la de la llave (las de antes de la fase 2 quedan en 2026-10-21, las creadas desde el 22-oct de 2026 hasta la salida de la 2026-11-18 en 2026-10-22; las nuevas nacen en 2026-11-18). La 2026-11-28 se pide con esta cabecera.",
       "schema": {
        "type": "string",
        "enum": [
         "2026-10-21",
         "2026-10-22",
-        "2026-11-18"
+        "2026-11-18",
+        "2026-11-28"
        ]
       }
      }
@@ -36255,7 +36290,7 @@
            "documents:write"
           ],
           "allowed_ips": [],
-          "api_version": "2026-11-18",
+          "api_version": "2026-11-28",
           "scope": {
            "type": "all",
            "companies": []
@@ -37605,7 +37640,7 @@
            "permissions": "write",
            "customers_read": false,
            "allowed_ips": [],
-           "api_version": "2026-11-18",
+           "api_version": "2026-11-28",
            "prefix": "tvl_test_ab12c",
            "status": "active",
            "created_at": "2026-11-18T10:05:00-05:00",
@@ -37927,7 +37962,7 @@
          "permissions": "write",
          "customers_read": false,
          "allowed_ips": [],
-         "api_version": "2026-11-18",
+         "api_version": "2026-11-28",
          "prefix": "tvl_test_ab12c",
          "status": "active",
          "created_at": "2026-11-18T10:05:00-05:00",
@@ -45982,7 +46017,8 @@
      "enum": [
       "2026-10-21",
       "2026-10-22",
-      "2026-11-18"
+      "2026-11-18",
+      "2026-11-28"
      ]
     }
    },
@@ -50146,7 +50182,8 @@
     "required": [
      "items",
      "concept"
-    ]
+    ],
+    "description": "Sin `payment`: desde la 2026-11-28, el de la factura de Trevol que corrige (si su vencimiento ya pasó, el mismo plazo en días desde la nota); antes, o sobre una factura de otra plataforma, contado."
    },
    "SupportDocumentInput": {
     "type": "object",
@@ -54625,6 +54662,7 @@
        "2026-10-21",
        "2026-10-22",
        "2026-11-18",
+       "2026-11-28",
        null
       ]
      },
@@ -54807,7 +54845,8 @@
         "enum": [
          "2026-10-21",
          "2026-10-22",
-         "2026-11-18"
+         "2026-11-18",
+         "2026-11-28"
         ]
        }
       }
@@ -60455,7 +60494,8 @@
       "enum": [
        "2026-10-21",
        "2026-10-22",
-       "2026-11-18"
+       "2026-11-18",
+       "2026-11-28"
       ],
       "description": "La versión de la API de la llave (el encabezado `Trevol-Version` manda)."
      },
@@ -60789,6 +60829,7 @@
        "2026-10-21",
        "2026-10-22",
        "2026-11-18",
+       "2026-11-28",
        null
       ]
      },
